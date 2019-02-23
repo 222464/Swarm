@@ -6,7 +6,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
 
-    _dists[layerIndex][diPrev] += _alpha * (reward - _dists[layerIndex][diPrev]);
+    _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]);
 
     // Find new max index
     int maxIndex = 0;
@@ -14,7 +14,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
-        if (_dists[layerIndex][di] > _dists[layerIndex][pos * _numArms + maxIndex])
+        if (_values[layerIndex][di] > _values[layerIndex][pos * _numArms + maxIndex])
             maxIndex = i;
     }
     
@@ -32,7 +32,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
 }
 
 void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
-    _dists.resize(numParameters.size());
+    _values.resize(numParameters.size());
     _indices.resize(numParameters.size());
 
     _numArms = numArms;
@@ -41,7 +41,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
 
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
-            _dists[i].resize(numParameters[i] * _numArms);
+            _values[i].resize(numParameters[i] * _numArms);
 
             _indices[i].resize(numParameters[i]);
 
@@ -52,9 +52,9 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
                 for (int k = 0; k < _numArms; k++) {
                     int index = j * _numArms + k;
 
-                    _dists[i][index] = distDist(cs._rng);
+                    _values[i][index] = distDist(cs._rng);
 
-                    if (_dists[i][index] > _dists[i][j * _numArms + maxIndex])
+                    if (_values[i][index] > _values[i][j * _numArms + maxIndex])
                         maxIndex = k;
                 }
 

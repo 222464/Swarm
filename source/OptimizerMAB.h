@@ -6,7 +6,7 @@ namespace swarm {
     // Multi-armed bandit (MAB) optimizer
     class OptimizerMAB : public Optimizer {
     private:
-        std::vector<FloatBuffer> _dists;
+        std::vector<FloatBuffer> _values;
         std::vector<IntBuffer> _indices;
 
         // Number of arms
