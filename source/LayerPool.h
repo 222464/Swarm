@@ -3,7 +3,7 @@
 #include "Layer.h"
 
 namespace swarm {
-    // 2D pooling layer (max pooling)
+    // 2D pooling layer
     class LayerPool : public Layer {
     private:
         Int3 _inputSize;

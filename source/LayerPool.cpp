@@ -3,7 +3,7 @@
 using namespace swarm;
 
 void LayerPool::pool(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates) {
-    float maxValue = -1.0f; // Minimum value
+    float maxValue = -1.0f;
 
     // Max pooling
     for (int dx = 0; dx < _poolDiv; dx++)
