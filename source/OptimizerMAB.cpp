@@ -14,6 +14,14 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
+        // Soft update previous average reward
+        float delta = _indices[layerIndex][pos] - i;
+
+        float strength = std::exp(-_gamma * delta * delta);
+
+        _dists[layerIndex][di] += _alpha * strength * (reward - _dists[layerIndex][di]);
+
+        // Find max
         if (_dists[layerIndex][di] > _dists[layerIndex][pos * _numArms + maxIndex])
             maxIndex = i;
     }
