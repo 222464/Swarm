@@ -71,5 +71,6 @@ void LayerConv::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {
 #endif
 
     // Recurrent state
-    _statesPrev = _states;
+    if (_recurrent)
+        _statesPrev = _states;
 }

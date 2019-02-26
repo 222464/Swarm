@@ -6,7 +6,7 @@ namespace swarm {
     // Multi-armed bandit (MAB) optimizer
     class OptimizerMAB : public Optimizer {
     private:
-        std::vector<FloatBuffer> _dists;
+        std::vector<FloatBuffer> _values;
         std::vector<IntBuffer> _indices;
 
         // Number of arms
@@ -30,7 +30,7 @@ namespace swarm {
         float _gamma;
 
         OptimizerMAB()
-        : _alpha(0.001f), _epsilon(1.0f), _gamma(0.2f)
+        : _alpha(0.001f), _epsilon(0.5f), _gamma(0.2f)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
