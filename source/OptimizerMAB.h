@@ -23,14 +23,11 @@ namespace swarm {
         // Average decay
         float _alpha;
 
-        // Exploration amount
-        float _epsilon;
-
         // Hardness of update
         float _gamma;
 
         OptimizerMAB()
-        : _alpha(0.01f), _epsilon(1.0f), _gamma(0.5f)
+        : _alpha(0.01f), _gamma(0.2f)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);

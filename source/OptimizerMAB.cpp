@@ -21,15 +21,8 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
             maxIndex = i;
     }
     
-    // Exploration
-    if (_epsilon == 0.0f)
-        _indices[layerIndex][pos] = maxIndex;
-    else { // Explore around index with Gaussian
-        std::normal_distribution<float> noiseDist(0.0f, _epsilon);
-
-        _indices[layerIndex][pos] = std::min(_numArms - 1, std::max(0, static_cast<int>(maxIndex + 0.5f + noiseDist(rng))));
-    }
-
+    _indices[layerIndex][pos] = maxIndex;
+    
     // Set parameter/weight
     (*parameters)[pos] = logit(static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1));
 }
