@@ -16,6 +16,8 @@ namespace swarm {
 
         // Whether there are recurrent connections
         bool _recurrent;
+        
+        bool _hasBiases;
 
         FloatBuffer _parameters;
 
@@ -36,7 +38,7 @@ namespace swarm {
         : _actScalar(4.0f)
         {}
 
-        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent);
+        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent, bool hasBiases);
 
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
         

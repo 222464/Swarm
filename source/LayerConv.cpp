@@ -5,8 +5,17 @@ using namespace swarm;
 void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates) {
     int paramStartIndex = _paramsPerMap * pos.z;
 
-    float activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
-    float count = 1.0f;
+    float activation;
+    float count;
+    
+    if (_hasBiases) {
+        activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
+        count = 1.0f;
+    }
+    else {
+        activation = 0.0f;
+        count = 0.0f;
+    }
 
     for (int dx = -_filterRadius; dx <= _filterRadius; dx++)
         for (int dy = -_filterRadius; dy <= _filterRadius; dy++) {
@@ -33,16 +42,18 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
             }
         }
 
-    _states[address3(pos, Int2(_inputSize.x, _inputSize.y))] = std::tanh(activation / count * _actScalar); // Tanh activation
+    _states[address3(pos, Int2(_inputSize.x, _inputSize.y))] = std::tanh(activation / std::max(1.0f, count) * _actScalar); // Tanh activation
 }
 
-void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent) {
+void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent, bool hasBiases) {
     _inputSize = inputSize;
     _numMaps = numMaps;
 
     _filterRadius = filterRadius;
 
     _recurrent = recurrent;
+
+    _hasBiases = hasBiases;
 
     _states.resize(_inputSize.x * _inputSize.y * _numMaps, 0.0f);
 
@@ -52,7 +63,7 @@ void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, in
     _filterDiam = _filterRadius * 2 + 1;
     _filterArea = _filterDiam * _filterDiam;
 
-    _paramsPerMap = _filterArea * (_inputSize.z + (_recurrent ? _numMaps : 0)) + 1; // +1 for bias
+    _paramsPerMap = _filterArea * (_inputSize.z + (_recurrent ? _numMaps : 0)) + (_hasBiases ? 1 : 0); // +1 for bias
 
     _parameters.resize(_paramsPerMap * _numMaps, 0.0f);
 }
