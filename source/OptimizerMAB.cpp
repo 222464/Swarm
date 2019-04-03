@@ -9,10 +9,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
-        // Soft update previous average reward
-        float delta = _indices[layerIndex][pos] - i;
-
-        float strength = std::exp(-_gamma * delta * delta);
+        float strength = _falloff[std::abs(_indices[layerIndex][pos] - i)];
 
         _values[layerIndex][di] += _alpha * strength * (reward - _values[layerIndex][di]);
 
@@ -58,6 +55,8 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
             } 
         }
     }
+
+    genFalloff();
 }
 
 void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) {
@@ -76,4 +75,11 @@ void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parame
         runKernel1(cs, std::bind(stepKernel, std::placeholders::_1, std::placeholders::_2, this, i, parameters[i], reward), _indices[i].size(), cs._rng, cs._batchSize1);
 #endif
     }
+}
+
+void OptimizerMAB::genFalloff() {
+    _falloff.resize(_numArms);
+
+    for (int i = 0; i < _numArms; i++)
+        _falloff[i] = std::exp(-_gamma * i * i);
 }

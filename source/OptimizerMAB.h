@@ -9,6 +9,8 @@ namespace swarm {
         std::vector<FloatBuffer> _values;
         std::vector<IntBuffer> _indices;
 
+        FloatBuffer _falloff;
+
         // Number of arms
         int _numArms;
 
@@ -33,5 +35,7 @@ namespace swarm {
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
 
         void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) override;
+
+        void genFalloff();
     };
 }
