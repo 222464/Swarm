@@ -28,7 +28,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     }
 
     // Set parameter/weight
-    (*parameters)[pos] = logit(static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1));
+    (*parameters)[pos] = (static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1)) * 2.0f - 1.0f;
 }
 
 void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
