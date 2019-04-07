@@ -29,7 +29,7 @@ namespace swarm {
         float _gamma;
 
         OptimizerMAB()
-        : _alpha(0.001f), _gamma(0.3f)
+        : _alpha(0.001f), _gamma(0.2f)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
