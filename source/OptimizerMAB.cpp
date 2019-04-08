@@ -9,9 +9,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
-        float strength = _falloff[std::abs(_indices[layerIndex][pos] - i)];
-
-        _values[layerIndex][di] += _alpha * strength * (reward - _values[layerIndex][di]);
+        _values[layerIndex][di] += _falloff[std::abs(_indices[layerIndex][pos] - i)] * (reward - _values[layerIndex][di]);
 
         // Find max
         if (_values[layerIndex][di] > _values[layerIndex][pos * _numArms + maxIndex])
@@ -81,5 +79,5 @@ void OptimizerMAB::genFalloff() {
     _falloff.resize(_numArms);
 
     for (int i = 0; i < _numArms; i++)
-        _falloff[i] = std::exp(-_gamma * i * i);
+        _falloff[i] = _alpha * std::exp(-_gamma * i * i);
 }

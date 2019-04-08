@@ -16,8 +16,6 @@ namespace swarm {
 
         // Whether there are recurrent connections
         bool _recurrent;
-        
-        bool _hasBiases;
 
         FloatBuffer _parameters;
 
@@ -33,12 +31,14 @@ namespace swarm {
     public:
         // Activation scalar (how quickly activation function saturates)
         float _actScalar;
+        float _biasScale;
 
         LayerConv()
-        : _actScalar(6.0f)
+        : _actScalar(6.0f),
+        _biasScale(0.0f)
         {}
 
-        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent, bool hasBiases);
+        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent);
 
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
         
