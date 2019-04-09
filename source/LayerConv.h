@@ -34,8 +34,8 @@ namespace swarm {
         float _biasScale;
 
         LayerConv()
-        : _actScalar(16.0f),
-        _biasScale(0.0f)
+        : _actScalar(4.0f),
+        _biasScale(0.1f)
         {}
 
         void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent);
