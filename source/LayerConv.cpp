@@ -29,20 +29,18 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
                 }
 
                 count += _inputSize.z;
-
-                if (_recurrent) {
-                    for (int z = 0; z < _numMaps; z++) {
-                        int wi = paramStartIndex + (dx + _filterRadius) + (dy + _filterRadius) * _filterDiam + (_inputSize.z + z) * _filterArea;
-
-                        activation += _parameters[wi] * _statesPrev[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
-                    }
-
-                    count += _numMaps;
-                }
             }
         }
 
-    _states[address3(pos, Int2(_inputSize.x, _inputSize.y))] = std::tanh(activation / std::max(1.0f, count) * _actScalar); // Tanh activation
+    int stateIndex = address3(pos, Int2(_inputSize.x, _inputSize.y));
+
+    if (_recurrent) {
+        float recurrence = _parameters[paramStartIndex + _paramsPerMap - 2];
+
+        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::tanh(activation / std::max(1.0f, count) * _actScalar) - _states[stateIndex]); // Tanh activation
+    }
+    else
+        _states[stateIndex] = std::tanh(activation / std::max(1.0f, count) * _actScalar); // Tanh activation
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent, bool hasBiases) {
@@ -57,13 +55,10 @@ void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, in
 
     _states.resize(_inputSize.x * _inputSize.y * _numMaps, 0.0f);
 
-    if (_recurrent)
-        _statesPrev = _states;
-
     _filterDiam = _filterRadius * 2 + 1;
     _filterArea = _filterDiam * _filterDiam;
 
-    _paramsPerMap = _filterArea * (_inputSize.z + (_recurrent ? _numMaps : 0)) + (_hasBiases ? 1 : 0); // +1 for bias
+    _paramsPerMap = _filterArea * _inputSize.z + (_recurrent ? 1 : 0) + (_hasBiases ? 1 : 0) ; // +1 for bias and +1 for recurrent
 
     _parameters.resize(_paramsPerMap * _numMaps, 0.0f);
 }
@@ -80,8 +75,4 @@ void LayerConv::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {
 #else
     runKernel3(cs, std::bind(LayerConv::convolveKernel, std::placeholders::_1, std::placeholders::_2, this, inputStates), stateSize, cs._rng, cs._batchSize3);
 #endif
-
-    // Recurrent state
-    if (_recurrent)
-        _statesPrev = _states;
 }

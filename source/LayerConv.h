@@ -21,8 +21,6 @@ namespace swarm {
 
         FloatBuffer _parameters;
 
-        FloatBuffer _statesPrev;
-
         // Kernels
         void convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates);
 
@@ -35,7 +33,7 @@ namespace swarm {
         float _actScalar;
 
         LayerConv()
-        : _actScalar(16.0f)
+        : _actScalar(8.0f)
         {}
 
         void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent, bool hasBiases);
