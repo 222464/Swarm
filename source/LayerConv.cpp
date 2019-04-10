@@ -20,7 +20,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     for (int dx = -_filterRadius; dx <= _filterRadius; dx++)
         for (int dy = -_filterRadius; dy <= _filterRadius; dy++) {
             Int2 dPos = Int2(pos.x * _stride + dx, pos.y * _stride + dy);
-
+            
             if (inBounds0(dPos, Int2(_inputSize.x, _inputSize.y))) {
                 for (int z = 0; z < _inputSize.z; z++) {
                     int wi = paramStartIndex + (dx + _filterRadius) + (dy + _filterRadius) * _filterDiam + z * _filterArea;
@@ -29,16 +29,18 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
                 }
 
                 count += _inputSize.z;
+            }
 
-                if (_recurrent) {
-                    for (int z = 0; z < _numMaps; z++) {
-                        int wi = paramStartIndex + (dx + _filterRadius) + (dy + _filterRadius) * _filterDiam + (_inputSize.z + z) * _filterArea;
+            Int2 dPosRecurrent = Int2(pos.x + dx, pos.y + dy);
 
-                        activation += _parameters[wi] * _statesPrev[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
-                    }
+            if (_recurrent && inBounds0(dPosRecurrent, Int2(_inputSize.x, _inputSize.y))) {
+                for (int z = 0; z < _numMaps; z++) {
+                    int wi = paramStartIndex + (dx + _filterRadius) + (dy + _filterRadius) * _filterDiam + (_inputSize.z + z) * _filterArea;
 
-                    count += _numMaps;
+                    activation += _parameters[wi] * _statesPrev[address3(Int3(dPosRecurrent.x, dPosRecurrent.y, z), Int2(_inputSize.x, _inputSize.y))];
                 }
+
+                count += _numMaps;
             }
         }
 
