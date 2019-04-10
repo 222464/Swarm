@@ -34,7 +34,7 @@ namespace swarm {
         float _biasScale;
 
         LayerConv()
-        : _actScalar(4.0f),
+        : _actScalar(16.0f),
         _biasScale(0.1f)
         {}
 
