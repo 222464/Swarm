@@ -28,7 +28,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
 
     _numArms = numArms;
 
-    std::uniform_real_distribution<float> distDist(-0.0001f, 0.0001f);
+    std::uniform_real_distribution<float> armDist(-0.0001f, 0.0001f);
 
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
@@ -43,7 +43,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
                 for (int k = 0; k < _numArms; k++) {
                     int index = j * _numArms + k;
 
-                    _values[i][index] = distDist(cs._rng);
+                    _values[i][index] = armDist(cs._rng);
 
                     if (_values[i][index] > _values[i][j * _numArms + maxIndex])
                         maxIndex = k;
