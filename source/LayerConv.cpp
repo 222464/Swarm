@@ -19,7 +19,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
 
     for (int dx = -_filterRadius; dx <= _filterRadius; dx++)
         for (int dy = -_filterRadius; dy <= _filterRadius; dy++) {
-            Int2 dPos = Int2(pos.x + dx, pos.y + dy);
+            Int2 dPos = Int2(pos.x * _stride + dx, pos.y * _stride + dy);
 
             if (inBounds0(dPos, Int2(_inputSize.x, _inputSize.y))) {
                 for (int z = 0; z < _inputSize.z; z++) {
@@ -42,14 +42,18 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
             }
         }
 
-    _states[address3(pos, Int2(_inputSize.x, _inputSize.y))] = std::tanh(activation / std::max(1.0f, count) * _actScalar); // Tanh activation
+    Int3 stateSize = getStateSize();
+
+    _states[address3(pos, Int2(stateSize.x, stateSize.y))] = std::tanh(activation / std::max(1.0f, count) * _actScalar); // Tanh activation
 }
 
-void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent) {
+void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent) {
     _inputSize = inputSize;
     _numMaps = numMaps;
 
     _filterRadius = filterRadius;
+
+    _stride = stride;
 
     _recurrent = recurrent;
 
