@@ -21,7 +21,7 @@ namespace swarm {
 
 		// Initialize the system
         ComputeSystem(int numWorkers)
-		: _pool(numWorkers), _batchSize1(512), _batchSize2(4, 4), _batchSize3(2, 2, 16)
+		: _pool(numWorkers), _batchSize1(512), _batchSize2(2, 2), _batchSize3(2, 2, 4)
 		{}
     };
 }
