@@ -9,8 +9,6 @@ namespace swarm {
         std::vector<FloatBuffer> _values;
         std::vector<IntBuffer> _indices;
 
-        FloatBuffer _falloff;
-
         // Number of arms
         int _numArms;
 
@@ -25,17 +23,15 @@ namespace swarm {
         // Average decay
         float _alpha;
 
-        // Hardness of update
-        float _gamma;
+        // Exploration amount
+        float _epsilon;
 
         OptimizerMAB()
-        : _alpha(0.001f), _gamma(0.5f)
+        : _alpha(0.01f), _epsilon(0.5f)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
 
         void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) override;
-
-        void genFalloff();
     };
 }
