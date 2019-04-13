@@ -16,9 +16,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
                 for (int z = 0; z < _inputSize.z; z++) {
                     int wi = paramStartIndex + (dx + _filterRadius) + (dy + _filterRadius) * _filterDiam + z * _filterArea;
 
-                    float input = inputStates[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
-
-                    activation += _parameters[wi] * input;
+                    activation += _parameters[wi] * inputStates[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
                 }
 
                 count += _inputSize.z;
@@ -32,10 +30,10 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     if (_recurrent) {
         float recurrence = _parameters[paramStartIndex + _paramsPerMap - 2];
 
-        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::min(1.0f, std::max(-1.0f, activation / count * _actScalar)) - _states[stateIndex]); // Clamp activation
+        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::tanh(activation / count * _actScalar) - _states[stateIndex]);
     }
     else
-        _states[stateIndex] = std::min(1.0f, std::max(-1.0f, activation / count * _actScalar)); // Clamp activation
+        _states[stateIndex] = std::tanh(activation / count * _actScalar);
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent) {
