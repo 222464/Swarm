@@ -15,7 +15,7 @@ Version 3.1+ of [CMake](https://cmake.org/) is required when building the librar
 > cd Swarm  
 > mkdir build  
 > cd build  
-> cmake -DCMAKE_INSTALL_PREFIX=../install ..  
+> cmake ..  
 > make  
 > make install
 
