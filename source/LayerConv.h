@@ -10,18 +10,15 @@ namespace swarm {
         int _numMaps;
 
         int _filterRadius;
+        int _stride;
         int _filterDiam;
         int _filterArea;
         int _paramsPerMap;
 
         // Whether there are recurrent connections
         bool _recurrent;
-        
-        bool _hasBiases;
 
         FloatBuffer _parameters;
-
-        FloatBuffer _statesPrev;
 
         // Kernels
         void convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates);
@@ -35,10 +32,10 @@ namespace swarm {
         float _actScalar;
 
         LayerConv()
-        : _actScalar(16.0f)
+        : _actScalar(8.0f)
         {}
 
-        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, bool recurrent, bool hasBiases);
+        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent);
 
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
         
@@ -47,7 +44,7 @@ namespace swarm {
         }
 
         Int3 getStateSize() const override {
-            return Int3(_inputSize.x, _inputSize.y, _numMaps);
+            return Int3(_inputSize.x / _stride, _inputSize.y / _stride, _numMaps);
         }
 
         FloatBuffer* getParameters() override {
