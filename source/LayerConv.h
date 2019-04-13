@@ -30,11 +30,9 @@ namespace swarm {
     public:
         // Activation scalar (how quickly activation function saturates)
         float _actScalar;
-        float _biasScale;
 
         LayerConv()
-        : _actScalar(16.0f),
-        _biasScale(0.1f)
+        : _actScalar(16.0f)
         {}
 
         void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent);

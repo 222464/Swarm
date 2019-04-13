@@ -5,17 +5,8 @@ using namespace swarm;
 void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates) {
     int paramStartIndex = _paramsPerMap * pos.z;
 
-    float activation;
-    float count;
-    
-    if (_biasScale != 0.0f) {
-        activation = _biasScale * _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
-        count = 1.0f;
-    }
-    else {
-        activation = 0.0f;
-        count = 0.0f;
-    }
+    float activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
+    float mag = 1.0f;
 
     for (int dx = -_filterRadius; dx <= _filterRadius; dx++)
         for (int dy = -_filterRadius; dy <= _filterRadius; dy++) {
@@ -25,10 +16,11 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
                 for (int z = 0; z < _inputSize.z; z++) {
                     int wi = paramStartIndex + (dx + _filterRadius) + (dy + _filterRadius) * _filterDiam + z * _filterArea;
 
-                    activation += _parameters[wi] * inputStates[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
-                }
+                    float input = inputStates[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
 
-                count += _inputSize.z;
+                    activation += _parameters[wi] * input;
+                    mag += input * input;
+                }
             }
         }
 
@@ -39,10 +31,10 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     if (_recurrent) {
         float recurrence = _parameters[paramStartIndex + _paramsPerMap - 2];
 
-        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::tanh(activation / std::max(1.0f, count) * _actScalar) - _states[stateIndex]); // Tanh activation
+        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::tanh(activation / std::sqrt(std::max(0.0001f, mag)) * _actScalar) - _states[stateIndex]); // Tanh activation
     }
     else
-        _states[stateIndex] = std::tanh(activation / std::max(1.0f, count) * _actScalar); // Tanh activation
+        _states[stateIndex] = std::tanh(activation / std::sqrt(std::max(0.0001f, mag)) * _actScalar); // Tanh activation
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent) {
