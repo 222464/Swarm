@@ -32,7 +32,7 @@ namespace swarm {
         float _actScalar;
 
         LayerConv()
-        : _actScalar(1.0f)
+        : _actScalar(4.0f)
         {}
 
         void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent);

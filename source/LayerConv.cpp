@@ -6,7 +6,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     int paramStartIndex = _paramsPerMap * pos.z;
 
     float activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
-    float mag = 1.0f;
+    float count = 1.0f;
 
     for (int dx = -_filterRadius; dx <= _filterRadius; dx++)
         for (int dy = -_filterRadius; dy <= _filterRadius; dy++) {
@@ -19,8 +19,9 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
                     float input = inputStates[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
 
                     activation += _parameters[wi] * input;
-                    mag += input * input;
                 }
+
+                count += _inputSize.z;
             }
         }
 
@@ -31,10 +32,10 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     if (_recurrent) {
         float recurrence = _parameters[paramStartIndex + _paramsPerMap - 2];
 
-        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::min(1.0f, std::max(-1.0f, activation / std::sqrt(mag) * _actScalar)) - _states[stateIndex]); // Clamp activation
+        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::min(1.0f, std::max(-1.0f, activation / count * _actScalar)) - _states[stateIndex]); // Clamp activation
     }
     else
-        _states[stateIndex] = std::min(1.0f, std::max(-1.0f, activation / std::sqrt(mag) * _actScalar)); // Clamp activation
+        _states[stateIndex] = std::min(1.0f, std::max(-1.0f, activation / count * _actScalar)); // Clamp activation
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent) {
