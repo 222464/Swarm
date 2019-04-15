@@ -24,6 +24,8 @@ namespace swarm {
 
         FloatBuffer _parameters;
 
+        FloatBuffer _statesPrev;
+
         // Kernels
         void convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates);
 
