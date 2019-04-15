@@ -28,12 +28,11 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     int stateIndex = address3(pos, Int2(stateSize.x, stateSize.y));
 
     if (_recurrent) {
-        float recurrence = _parameters[paramStartIndex + _paramsPerMap - 2];
-
-        _states[stateIndex] += std::min(1.0f, 1.0f - recurrence) * (std::tanh(activation / count * _actScalar) - _states[stateIndex]);
+        activation += _parameters[paramStartIndex + _paramsPerMap - 2] * _states[stateIndex];
+        count += 1.0f;
     }
-    else
-        _states[stateIndex] = std::tanh(activation / count * _actScalar);
+
+    _states[stateIndex] = std::tanh(activation / count * _actScalar);
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent) {
