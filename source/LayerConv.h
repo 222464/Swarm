@@ -5,18 +5,22 @@
 namespace swarm {
     // 2D convolution layer
     class LayerConv : public Layer {
+    public:
+        struct FilterDesc {
+            int _filterRadius;
+            int _stride;
+            int _filterDiam;
+            int _filterArea;
+        };
+
     private:
         Int3 _inputSize;
         int _numMaps;
 
-        int _filterRadius;
-        int _stride;
-        int _filterDiam;
-        int _filterArea;
+        FilterDesc _spatial;
+        FilterDesc _recurrent;
+        
         int _paramsPerMap;
-
-        // Whether there are recurrent connections
-        bool _recurrent;
 
         FloatBuffer _parameters;
 
@@ -35,7 +39,7 @@ namespace swarm {
         : _actScalar(8.0f)
         {}
 
-        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent);
+        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius, int recurrentFilterStride);
 
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
         
@@ -44,7 +48,7 @@ namespace swarm {
         }
 
         Int3 getStateSize() const override {
-            return Int3(_inputSize.x / _stride, _inputSize.y / _stride, _numMaps);
+            return Int3(_inputSize.x / _spatial._stride, _inputSize.y / _spatial._stride, _numMaps);
         }
 
         FloatBuffer* getParameters() override {

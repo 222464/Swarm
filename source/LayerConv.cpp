@@ -3,18 +3,20 @@
 using namespace swarm;
 
 void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates) {
+    Int3 stateSize = getStateSize();
+
     int paramStartIndex = _paramsPerMap * pos.z;
 
     float activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
     float count = 1.0f;
 
-    for (int dx = -_filterRadius; dx <= _filterRadius; dx++)
-        for (int dy = -_filterRadius; dy <= _filterRadius; dy++) {
-            Int2 dPos = Int2(pos.x * _stride + dx, pos.y * _stride + dy);
+    for (int dx = -_spatial._filterRadius; dx <= _spatial._filterRadius; dx++)
+        for (int dy = -_spatial._filterRadius; dy <= _spatial._filterRadius; dy++) {
+            Int2 dPos = Int2(pos.x * _spatial._stride + dx, pos.y * _spatial._stride + dy);
             
             if (inBounds0(dPos, Int2(_inputSize.x, _inputSize.y))) {
                 for (int z = 0; z < _inputSize.z; z++) {
-                    int wi = paramStartIndex + (dx + _filterRadius) + (dy + _filterRadius) * _filterDiam + z * _filterArea;
+                    int wi = paramStartIndex + (dx + _spatial._filterRadius) + (dy + _spatial._filterRadius) * _spatial._filterDiam + z * _spatial._filterArea;
 
                     activation += _parameters[wi] * inputStates[address3(Int3(dPos.x, dPos.y, z), Int2(_inputSize.x, _inputSize.y))];
                 }
@@ -23,34 +25,46 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
             }
         }
 
-    Int3 stateSize = getStateSize();
+    for (int dx = -_recurrent._filterRadius; dx <= _recurrent._filterRadius; dx++)
+        for (int dy = -_recurrent._filterRadius; dy <= _recurrent._filterRadius; dy++) {
+            Int2 dPos = Int2(pos.x * _recurrent._stride + dx, pos.y * _recurrent._stride + dy);
+            
+            if (inBounds0(dPos, Int2(stateSize.x, stateSize.y))) {
+                for (int z = 0; z < _numMaps; z++) {
+                    int wi = paramStartIndex + (dx + _recurrent._filterRadius) + (dy + _recurrent._filterRadius) * _recurrent._filterDiam + z * _recurrent._filterArea;
 
+                    activation += _parameters[wi] * inputStates[address3(Int3(dPos.x, dPos.y, z), Int2(stateSize.x, stateSize.y))];
+                }
+
+                count += _numMaps;
+            }
+        }
+
+    
     int stateIndex = address3(pos, Int2(stateSize.x, stateSize.y));
-
-    if (_recurrent) {
-        activation += _parameters[paramStartIndex + _paramsPerMap - 2] * _states[stateIndex];
-        count += 1.0f;
-    }
 
     _states[stateIndex] = std::tanh(activation / count * _actScalar);
 }
 
-void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int filterRadius, int stride, bool recurrent) {
+void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius, int recurrentFilterStride) {
     _inputSize = inputSize;
     _numMaps = numMaps;
 
-    _filterRadius = filterRadius;
+    _spatial._filterRadius = spatialFilterRadius;
+    _spatial._stride = spatialFilterStride;
 
-    _stride = stride;
+    _spatial._filterDiam = _spatial._filterRadius * 2 + 1;
+    _spatial._filterArea = _spatial._filterDiam * _spatial._filterDiam;
 
-    _recurrent = recurrent;
+    _recurrent._filterRadius = recurrentFilterRadius;
+    _recurrent._stride = recurrentFilterStride;
+
+    _recurrent._filterDiam = _recurrent._filterRadius * 2 + 1;
+    _recurrent._filterArea = _recurrent._filterDiam * _recurrent._filterDiam;
 
     _states.resize(_inputSize.x * _inputSize.y * _numMaps, 0.0f);
 
-    _filterDiam = _filterRadius * 2 + 1;
-    _filterArea = _filterDiam * _filterDiam;
-
-    _paramsPerMap = _filterArea * _inputSize.z + (_recurrent ? 1 : 0) + 1; // +1 for recurrent (optional) and +1 for bias
+    _paramsPerMap = _spatial._filterArea * _inputSize.z + _recurrent._filterArea * _numMaps + 1; // +1 for bias
 
     _parameters.resize(_paramsPerMap * _numMaps, 0.0f);
 }
