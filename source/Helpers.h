@@ -76,6 +76,7 @@ namespace swarm {
         return position.x >= lowerBound.x && position.x < upperBound.x && position.y >= lowerBound.y && position.y < upperBound.y;
     }
 
+    // Column-major (Fortran) order
     inline int address2(const Int2 &pos, int dim) {
         return pos.x + pos.y * dim;
     }
