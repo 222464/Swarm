@@ -8,7 +8,6 @@ namespace swarm {
     public:
         struct FilterDesc {
             int _filterRadius;
-            int _stride;
             int _filterDiam;
             int _filterArea;
         };
@@ -18,6 +17,7 @@ namespace swarm {
         int _numMaps;
 
         FilterDesc _spatial;
+        int _spatialFilterStride;
         FilterDesc _recurrent;
         
         int _paramsPerMap;
@@ -41,7 +41,7 @@ namespace swarm {
         : _actScalar(8.0f)
         {}
 
-        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius, int recurrentFilterStride);
+        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius);
 
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
         
@@ -50,7 +50,7 @@ namespace swarm {
         }
 
         Int3 getStateSize() const override {
-            return Int3(_inputSize.x / _spatial._stride, _inputSize.y / _spatial._stride, _numMaps);
+            return Int3(_inputSize.x / _spatialFilterStride, _inputSize.y / _spatialFilterStride, _numMaps);
         }
 
         FloatBuffer* getParameters() override {
