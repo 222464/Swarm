@@ -33,7 +33,7 @@ namespace swarm {
         int _playTime;
 
         OptimizerMAB()
-        : _timer(0), _alpha(0.01f), _epsilon(0.8f), _playTime(16)
+        : _timer(0), _alpha(0.01f), _epsilon(1.0f), _playTime(32)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
