@@ -9,14 +9,17 @@ namespace swarm {
         std::vector<FloatBuffer> _values;
         std::vector<IntBuffer> _indices;
 
+        // Timer for play time
+        int _timer;
+
         // Number of arms
         int _numArms;
 
         // Kernels
-        void step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward);
+        void step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward, bool select);
 
-        static void stepKernel(int pos, std::mt19937 &rng, OptimizerMAB* p, int layerIndex, FloatBuffer* parameters, float reward) {
-            p->step(pos, rng, layerIndex, parameters, reward);
+        static void stepKernel(int pos, std::mt19937 &rng, OptimizerMAB* p, int layerIndex, FloatBuffer* parameters, float reward, bool select) {
+            p->step(pos, rng, layerIndex, parameters, reward, select);
         }
 
     public:
@@ -26,8 +29,11 @@ namespace swarm {
         // Exploration amount
         float _epsilon;
 
+        // Ticks to try an arm
+        int _playTime;
+
         OptimizerMAB()
-        : _alpha(0.01f), _epsilon(1.0f)
+        : _timer(0), _alpha(0.01f), _epsilon(0.7f), _playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
