@@ -76,20 +76,26 @@ namespace swarm {
         return position.x >= lowerBound.x && position.x < upperBound.x && position.y >= lowerBound.y && position.y < upperBound.y;
     }
 
-    // Column-major (Fortran) order
-    inline int address2(const Int2 &pos, int dim) {
-        return pos.x + pos.y * dim;
+    // Row-major ravels
+    inline int address2(
+        const Int2 &pos, // Position
+        const Int2 &dims // Dimensions to ravel with
+    ) {
+        return pos.y + pos.x * dims.y;
     }
 
-    inline int address3(const Int3 &pos, const Int2 &dims) {
-        return pos.x + pos.y * dims.x + pos.z * dims.x * dims.y;
+    inline int address3(
+        const Int3 &pos, // Position
+        const Int3 &dims // Dimensions to ravel with
+    ) {
+        return pos.z + pos.y * dims.z + pos.x * dims.z * dims.y;
     }
 
-    inline int address4(const Int4 &pos, const Int3 &dims) {
-        int dxy = dims.x * dims.y;
-        int dxyz = dxy * dims.z;
-
-        return pos.x + pos.y * dims.x + pos.z * dxy + pos.w * dxyz;
+    inline int address4(
+        const Int4 &pos, // Position
+        const Int4 &dims // Dimensions to ravel with
+    ) {
+        return pos.w + pos.z * dims.w + pos.y * dims.w * dims.z + pos.x * dims.w * dims.z * dims.y;
     }
 
     float sigmoid(float x);

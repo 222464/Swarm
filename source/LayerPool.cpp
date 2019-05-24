@@ -11,13 +11,13 @@ void LayerPool::pool(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inpu
             Int2 dPos = Int2(pos.x * _poolDiv + dx, pos.y * _poolDiv + dy);
 
             if (inBounds0(dPos, Int2(_inputSize.x, _inputSize.y))) {
-                float value = inputStates[address3(Int3(dPos.x, dPos.y, pos.z), Int2(_inputSize.x, _inputSize.y))];
+                float value = inputStates[address3(Int3(dPos.x, dPos.y, pos.z), _inputSize)];
 
                 maxValue = std::max(maxValue, value);
             }
         }
 
-    _states[address3(pos, Int2(_stateSize.x, _stateSize.y))] = maxValue;
+    _states[address3(pos, _stateSize)] = maxValue;
 }
 
 void LayerPool::create(ComputeSystem &cs, const Int3 &inputSize, int poolDiv) {
