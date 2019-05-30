@@ -28,14 +28,17 @@ namespace swarm {
         // Average decay
         float _alpha;
 
-        // Exploration amount
+        // Hardness
         float _gamma;
+
+        // Exploration
+        float _epsilon;
 
         // Ticks to try an arm
         int _playTime;
 
         OptimizerMAB()
-        : _timer(0), _alpha(0.01f), _gamma(0.3f), _playTime(8)
+        : _timer(0), _alpha(0.001f), _gamma(0.2f), _epsilon(0.6f), _playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
