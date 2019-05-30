@@ -6,7 +6,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
 
-    _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]);
+    _values[layerIndex][diPrev] = std::max(reward, _values[layerIndex][diPrev] + _alpha * (reward - _values[layerIndex][diPrev]));
 
     if (select) {
         // Find new max index
@@ -39,7 +39,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
 
     _numArms = numArms;
 
-    std::uniform_real_distribution<float> armDist(-0.0001f, 0.0001f);
+    std::uniform_real_distribution<float> armDist(-99999.0f, -9999.0f);
 
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
