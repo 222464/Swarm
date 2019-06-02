@@ -3,15 +3,21 @@
 using namespace swarm;
 
 void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward, bool select) {
+    for (int i = 0; i < _numArms; i++) {
+        int di = pos * _numArms + i;
+
+        _traces[layerIndex][di] *= 1.0f - _beta;
+    }
+
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
+
+    _traces[layerIndex][diPrev] = 1.0f;
 
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
         _values[layerIndex][di] += _alpha * _traces[layerIndex][di] * (reward - _values[layerIndex][di]);
-
-        _traces[layerIndex][di] *= 1.0f - _beta;
     }
 
     if (select) {
@@ -34,8 +40,6 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
             _indices[layerIndex][pos] = std::min(_numArms - 1, std::max(0, static_cast<int>(maxIndex + 0.5f + noiseDist(rng))));
         }
     }
-
-    _traces[layerIndex][diPrev] = 1.0f;
 
     // Set parameter/weight
     (*parameters)[pos] = (static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1)) * 2.0f - 1.0f;
