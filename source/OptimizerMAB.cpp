@@ -6,7 +6,13 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
 
-    _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]);
+    for (int i = 0; i < _numArms; i++) {
+        int di = pos * _numArms + i;
+
+        _values[layerIndex][di] += _alpha * _traces[layerIndex][di] * (reward - _values[layerIndex][di]);
+
+        _traces[layerIndex][di] *= 1.0f - _beta;
+    }
 
     if (select) {
         // Find new max index
@@ -27,14 +33,17 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
 
             _indices[layerIndex][pos] = std::min(_numArms - 1, std::max(0, static_cast<int>(maxIndex + 0.5f + noiseDist(rng))));
         }
-
-        // Set parameter/weight
-        (*parameters)[pos] = (static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1)) * 2.0f - 1.0f;
     }
+
+    _traces[layerIndex][diPrev] = 1.0f;
+
+    // Set parameter/weight
+    (*parameters)[pos] = (static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1)) * 2.0f - 1.0f;
 }
 
 void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
     _values.resize(numParameters.size());
+    _traces.resize(numParameters.size());
     _indices.resize(numParameters.size());
 
     _numArms = numArms;
@@ -44,6 +53,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
             _values[i].resize(numParameters[i] * _numArms);
+            _traces[i].resize(_values[i].size(), 0.0f);
 
             _indices[i].resize(numParameters[i]);
 
@@ -87,6 +97,7 @@ void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parame
 
     if (select)
         _timer = _playTime;
-    else
+
+    if (_timer > 0)
         _timer--;
 }
