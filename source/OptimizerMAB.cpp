@@ -3,11 +3,18 @@
 using namespace swarm;
 
 void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward, bool select) {
+    // Trace update
+    for (int i = 0; i < _numArms; i++) {
+        int di = pos * _numArms + i;
+
+        _traces[layerIndex][di] = std::max((1.0f - _beta) * _traces[layerIndex][di], _falloff[std::abs(_indices[layerIndex][pos] - i)]);
+    }
+
     // Update previous average reward
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
-        _values[layerIndex][di] += _falloff[std::abs(_indices[layerIndex][pos] - i)] * (reward - _values[layerIndex][di]);
+        _values[layerIndex][di] += _traces[layerIndex][di] * (reward - _values[layerIndex][di]);
     }
 
     if (select) {
@@ -38,6 +45,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
 
 void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
     _values.resize(numParameters.size());
+    _traces.resize(numParameters.size());
     _indices.resize(numParameters.size());
 
     _numArms = numArms;
@@ -47,6 +55,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
             _values[i].resize(numParameters[i] * _numArms);
+            _traces[i].resize(_values[i].size(), 0.0f);
 
             _indices[i].resize(numParameters[i]);
 
