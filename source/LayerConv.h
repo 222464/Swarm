@@ -36,9 +36,11 @@ namespace swarm {
     public:
         // Activation scalar (how quickly activation function saturates)
         float _actScalar;
+        float _recurrentScalar;
 
         LayerConv()
-        : _actScalar(8.0f)
+        : _actScalar(1.0f),
+        _recurrentScalar(0.05f)
         {}
 
         void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius);
@@ -55,6 +57,10 @@ namespace swarm {
 
         FloatBuffer* getParameters() override {
             return &_parameters;
+        }
+
+        FloatBuffer &getStatesPrev() {
+            return _statesPrev;
         }
     };
 }

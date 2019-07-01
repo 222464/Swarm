@@ -21,7 +21,7 @@ namespace swarm {
         // Duplication factory
         virtual std::shared_ptr<Layer> clone() const = 0;
 
-        const FloatBuffer &getStates() const {
+        FloatBuffer &getStates() {
             return _states;
         }
     };
