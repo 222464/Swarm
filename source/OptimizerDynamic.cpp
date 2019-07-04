@@ -38,8 +38,8 @@ void OptimizerDynamic::create(ComputeSystem &cs, const std::vector<int> &numPara
     _Ts.resize(numParameters.size());
     _timers.resize(numParameters.size());
 
-    std::uniform_real_distribution<float> distNoise(-0.001f, 0.001f);
-    std::uniform_real_distribution<float> dist11(-1.0f, 1.0f);
+    std::uniform_real_distribution<float> CDist(-0.001f, 0.001f);
+    std::normal_distribution<float> ADist(0.0f, 1.0f);
     std::normal_distribution<float> TDist(_mu, _sigma);
 
     for (int i = 0; i < numParameters.size(); i++) {
@@ -53,8 +53,8 @@ void OptimizerDynamic::create(ComputeSystem &cs, const std::vector<int> &numPara
 
             // Random init
             for (int j = 0; j < numParameters[i]; j++) {
-                _Cs[i][j] = distNoise(cs._rng);
-                _As[i][j] = dist11(cs._rng);
+                _Cs[i][j] = CDist(cs._rng);
+                _As[i][j] = ADist(cs._rng);
                 _Ts[i][j] = std::max(1, static_cast<int>((TDist(cs._rng) + 0.5f)));
             } 
         }
