@@ -12,7 +12,7 @@ void OptimizerDynamic::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuf
     // Reinforcement
     _Cs[layerIndex][pos] += _alpha * reward * (_Ws[layerIndex][pos] - _Cs[layerIndex][pos]);
     _As[layerIndex][pos] += -_beta * (_As[layerIndex][pos] > 0.0f ? 1.0f : -1.0f) * reward;
-
+    std::cout << _As[layerIndex][pos] << std::endl;
     // Find weight
     _Ws[layerIndex][pos] = WFunc(_Ws[layerIndex][pos], _As[layerIndex][pos], _Cs[layerIndex][pos], _Ts[layerIndex][pos], _timers[layerIndex][pos]);
 
