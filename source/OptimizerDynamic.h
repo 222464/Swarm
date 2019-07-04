@@ -29,7 +29,7 @@ namespace swarm {
         float _sigma;
 
         OptimizerDynamic()
-        : _alpha(0.1f), _beta(0.01f), _mu(100.0f), _sigma(40.0f)
+        : _alpha(0.01f), _beta(0.01f), _mu(100.0f), _sigma(40.0f)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters);
