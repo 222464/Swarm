@@ -38,8 +38,8 @@ void OptimizerDynamic::create(ComputeSystem &cs, const std::vector<int> &numPara
     _Ts.resize(numParameters.size());
     _timers.resize(numParameters.size());
 
-    std::uniform_real_distribution<float> CDist(-1.0, 1.0f);
-    std::normal_distribution<float> ADist(0.0f, 1.0f);
+    std::uniform_real_distribution<float> CDist(-0.01f, 0.01f);
+    std::normal_distribution<float> ADist(0.0f, 0.01f);
     std::normal_distribution<float> TDist(_mu, _sigma);
 
     for (int i = 0; i < numParameters.size(); i++) {
