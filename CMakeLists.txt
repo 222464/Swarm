@@ -28,6 +28,7 @@ set(SOURCES
     "${SOURCE_PATH}/LayerConv.cpp"
     "${SOURCE_PATH}/LayerPool.cpp"
     "${SOURCE_PATH}/OptimizerMAB.cpp"
+    "${SOURCE_PATH}/OptimizerDynamic.cpp"
 )
 
 add_library(Swarm ${SOURCES})
