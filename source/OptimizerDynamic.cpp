@@ -1,5 +1,5 @@
 #include "OptimizerDynamic.h"
-#include <iostream>
+
 using namespace swarm;
 
 const float _pi = 3.141596f;
