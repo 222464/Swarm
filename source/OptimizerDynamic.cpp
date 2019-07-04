@@ -11,7 +11,7 @@ float OptimizerDynamic::WFunc(float W, float A, float C, int T, int timer) {
 void OptimizerDynamic::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward) {
     // Reinforcement
     _Cs[layerIndex][pos] += _alpha * reward * (_Ws[layerIndex][pos] - _Cs[layerIndex][pos]);
-    _As[layerIndex][pos] += -_beta * reward;
+    _As[layerIndex][pos] += -_beta * (_As[layerIndex][pos] > 0.0f ? 1.0f : -1.0f) * reward;
 
     // Find weight
     _Ws[layerIndex][pos] = WFunc(_Ws[layerIndex][pos], _As[layerIndex][pos], _Cs[layerIndex][pos], _Ts[layerIndex][pos], _timers[layerIndex][pos]);
@@ -24,7 +24,7 @@ void OptimizerDynamic::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuf
 
         std::normal_distribution<float> TDist(_mu, _sigma);
 
-        _Ts[layerIndex][pos] = std::max(1, static_cast<int>((TDist(rng) + 0.5f)));
+        _Ts[layerIndex][pos] = std::max(1, static_cast<int>(TDist(rng) + 0.5f));
     }
 
     // Set parameter/weight
@@ -38,7 +38,7 @@ void OptimizerDynamic::create(ComputeSystem &cs, const std::vector<int> &numPara
     _Ts.resize(numParameters.size());
     _timers.resize(numParameters.size());
 
-    std::uniform_real_distribution<float> CDist(-0.001f, 0.001f);
+    std::uniform_real_distribution<float> CDist(-0.01f, 0.01f);
     std::normal_distribution<float> ADist(0.0f, 1.0f);
     std::normal_distribution<float> TDist(_mu, _sigma);
 
@@ -55,7 +55,7 @@ void OptimizerDynamic::create(ComputeSystem &cs, const std::vector<int> &numPara
             for (int j = 0; j < numParameters[i]; j++) {
                 _Cs[i][j] = CDist(cs._rng);
                 _As[i][j] = ADist(cs._rng);
-                _Ts[i][j] = std::max(1, static_cast<int>((TDist(cs._rng) + 0.5f)));
+                _Ts[i][j] = std::max(1, static_cast<int>(TDist(cs._rng) + 0.5f));
             } 
         }
     }
