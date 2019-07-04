@@ -29,10 +29,10 @@ namespace swarm {
         float _sigma;
 
         OptimizerDynamic()
-        : _alpha(0.01f), _beta(0.01f), _mu(100.0f), _sigma(30.0f)
+        : _alpha(0.001f), _beta(0.001f), _mu(100.0f), _sigma(30.0f)
         {}
 
-        void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
+        void create(ComputeSystem &cs, const std::vector<int> &numParameters);
 
         void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) override;
 

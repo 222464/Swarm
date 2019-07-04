@@ -1,17 +1,17 @@
 #include "OptimizerDynamic.h"
-
+#include <iostream>
 using namespace swarm;
 
 const float _pi = 3.141596f;
 
-static float WFunc(float W, float A, float C, int T, int timer) {
+float OptimizerDynamic::WFunc(float W, float A, float C, int T, int timer) {
     return A * std::sin(2.0f * _pi * static_cast<float>(timer) / static_cast<float>(T)) + C;
 }
 
 void OptimizerDynamic::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward) {
     // Reinforcement
     _Cs[layerIndex][pos] += _alpha * reward * (_Ws[layerIndex][pos] - _Cs[layerIndex][pos]);
-    _As[layerIndex][pos] = -_beta * reward;
+    _As[layerIndex][pos] += -_beta * reward;
 
     // Find weight
     _Ws[layerIndex][pos] = WFunc(_Ws[layerIndex][pos], _As[layerIndex][pos], _Cs[layerIndex][pos], _Ts[layerIndex][pos], _timers[layerIndex][pos]);
@@ -31,7 +31,7 @@ void OptimizerDynamic::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuf
     (*parameters)[pos] = _Ws[layerIndex][pos];
 }
 
-void OptimizerDynamic::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
+void OptimizerDynamic::create(ComputeSystem &cs, const std::vector<int> &numParameters) {
     _Ws.resize(numParameters.size());
     _Cs.resize(numParameters.size());
     _As.resize(numParameters.size());
