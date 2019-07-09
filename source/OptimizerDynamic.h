@@ -23,7 +23,7 @@ namespace swarm {
         float _temperature;
 
         OptimizerDynamic()
-        : _alpha(0.02f), _gamma(0.97f), _epsilon(0.1f), _temperature(0.5f)
+        : _alpha(0.001f), _gamma(0.97f), _epsilon(0.1f), _temperature(0.5f)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters);
