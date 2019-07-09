@@ -6,11 +6,8 @@ namespace swarm {
     // Dynamic optimizer
     class OptimizerDynamic : public Optimizer {
     private:
-        std::vector<FloatBuffer> _Ws;
-        std::vector<FloatBuffer> _As;
-        std::vector<FloatBuffer> _Cs;
-        std::vector<IntBuffer> _Ts;
-        std::vector<IntBuffer> _timers;
+        std::vector<FloatBuffer> _ws;
+        std::vector<FloatBuffer> _ts;
 
         // Kernels
         void step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward);
@@ -19,17 +16,14 @@ namespace swarm {
             p->step(pos, rng, layerIndex, parameters, reward);
         }
 
-        static float WFunc(float W, float A, float C, int T, int timer);
-
     public:
         float _alpha;
-        float _beta;
-
-        float _mu;
-        float _sigma;
+        float _gamma;
+        float _epsilon;
+        float _temperature;
 
         OptimizerDynamic()
-        : _alpha(0.01f), _beta(0.01f), _mu(400.0f), _sigma(100.0f)
+        : _alpha(0.02f), _gamma(0.97f), _epsilon(0.01f), _temperature(0.5f)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters);
@@ -37,23 +31,11 @@ namespace swarm {
         void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) override;
 
         std::vector<FloatBuffer> &getWs() {
-            return _Ws;
+            return _ws;
         }
 
-        std::vector<FloatBuffer> &getAs() {
-            return _As;
-        }
-
-        std::vector<FloatBuffer> &getCs() {
-            return _Cs;
-        }
-
-        std::vector<IntBuffer> &getTs() {
-            return _Ts;
-        }
-
-        std::vector<IntBuffer> &getTimers() {
-            return _timers;
+        std::vector<FloatBuffer> &getTs() {
+            return _ts;
         }
     };
 }
