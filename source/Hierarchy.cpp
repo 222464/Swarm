@@ -53,3 +53,27 @@ std::vector<int> Hierarchy::getNumParameters() {
 
     return numParameters;
 }
+
+int Hierarchy::getTotalNumParameters() {
+    std::vector<int> numParameters = getNumParameters();
+
+    int total = 0;
+
+    for (int i = 0; i < numParameters.size(); i++)
+        total += numParameters[i];
+
+    return total;
+}
+
+std::vector<FloatBuffer*> Hierarchy::getParameters() {
+    std::vector<FloatBuffer*> parameters(_layers.size());
+
+    // Gather parameters
+    for (int i = 0; i < _layers.size(); i++) {
+        assert(_layers[i] != nullptr);
+
+        parameters[i] = _layers[i]->getParameters();
+    }
+
+    return parameters;
+}

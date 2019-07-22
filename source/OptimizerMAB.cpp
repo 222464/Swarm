@@ -14,7 +14,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
-        _values[layerIndex][di] += _traces[layerIndex][di] * (reward - _values[layerIndex][di]);
+        _values[layerIndex][di] += _alpha * _traces[layerIndex][di] * reward;//(reward - _values[layerIndex][di]);
     }
 
     if (select) {
@@ -29,15 +29,17 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
                 maxIndex = i;
         }
         
-         // Exploration
-        if (_epsilon == 0.0f)
-            _indices[layerIndex][pos] = maxIndex;
-        else { // Explore around index with Gaussian
-            std::normal_distribution<float> noiseDist(0.0f, _epsilon);
+        // Exploration
+        std::uniform_real_distribution<float> dist01(0.0f, 1.0f);
 
-            _indices[layerIndex][pos] = std::min(_numArms - 1, std::max(0, static_cast<int>(maxIndex + 0.5f + noiseDist(rng))));
+        if (dist01(rng) < _epsilon) {
+            std::uniform_int_distribution<int> armDist(0, _numArms - 1);
+
+            _indices[layerIndex][pos] = armDist(rng);
         }
-        
+        else
+            _indices[layerIndex][pos] = maxIndex;
+
         // Set parameter/weight
         (*parameters)[pos] = (static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1)) * 2.0f - 1.0f;
     }
@@ -109,5 +111,5 @@ void OptimizerMAB::genFalloff() {
     _falloff.resize(_numArms);
 
     for (int i = 0; i < _numArms; i++)
-        _falloff[i] = _alpha * std::exp(-_gamma * i * i);
+        _falloff[i] = std::exp(-_gamma * i * i);
 }

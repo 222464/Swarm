@@ -8,7 +8,6 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     int paramStartIndex = _paramsPerMap * pos.z;
 
     float activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
-    float count = 1.0f;
 
     for (int dx = -_spatial._filterRadius; dx <= _spatial._filterRadius; dx++)
         for (int dy = -_spatial._filterRadius; dy <= _spatial._filterRadius; dy++) {
@@ -20,12 +19,12 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
 
                     activation += _parameters[wi] * inputStates[address3(Int3(dPos.x, dPos.y, z), _inputSize)];
                 }
-
-                count += _inputSize.z;
             }
         }
 
     if (_recurrent._filterRadius >= 0) {
+        float recurrentActivation = 0.0f;
+
         int recurrentParamStartIndex = paramStartIndex + _spatial._filterArea * _inputSize.z;
 
         for (int dx = -_recurrent._filterRadius; dx <= _recurrent._filterRadius; dx++)
@@ -36,17 +35,17 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
                     for (int z = 0; z < _numMaps; z++) {
                         int wi = recurrentParamStartIndex + (dx + _recurrent._filterRadius) + (dy + _recurrent._filterRadius) * _recurrent._filterDiam + z * _recurrent._filterArea;
 
-                        activation += _parameters[wi] * _statesPrev[address3(Int3(dPos.x, dPos.y, z), stateSize)];
+                        recurrentActivation += _parameters[wi] * _statesPrev[address3(Int3(dPos.x, dPos.y, z), stateSize)];
                     }
-
-                    count += _numMaps;
                 }
             }
+
+        activation += _recurrentScalar * recurrentActivation;
     }
     
     int stateIndex = address3(pos, stateSize);
 
-    _states[stateIndex] = std::tanh(activation / count * _actScalar);
+    _states[stateIndex] = std::tanh(activation * _actScalar);
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius) {

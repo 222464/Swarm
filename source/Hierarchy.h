@@ -29,6 +29,8 @@ namespace swarm {
         void optimize(ComputeSystem &cs, Optimizer* opt, float reward);
 
         std::vector<int> getNumParameters();
+        int getTotalNumParameters();
+        std::vector<FloatBuffer*> getParameters();
 
         std::vector<std::shared_ptr<Layer>> &getLayers() {
             return _layers;
