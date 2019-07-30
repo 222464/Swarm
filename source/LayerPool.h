@@ -12,16 +12,11 @@ namespace swarm {
         // Downsampling factor
         int _poolDiv;
 
-        //!@{
-        /*!
-        \brief Kernels
-        */
         void pool(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates);
 
         static void poolKernel(const Int3 &pos, std::mt19937 &rng, LayerPool* p, const FloatBuffer &inputStates) {
             p->pool(pos, rng, inputStates);
         }
-        //!@}
 
     public:
         // Create with given downsampling factor

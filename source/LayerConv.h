@@ -39,7 +39,7 @@ namespace swarm {
         float _recurrentScalar;
 
         LayerConv()
-        : _actScalar(1.0f),
+        : _actScalar(0.5f),
         _recurrentScalar(0.05f)
         {}
 
