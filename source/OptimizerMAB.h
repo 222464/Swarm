@@ -7,7 +7,6 @@ namespace swarm {
     class OptimizerMAB : public Optimizer {
     private:
         std::vector<FloatBuffer> _values;
-        std::vector<FloatBuffer> _traces;
         std::vector<IntBuffer> _indices;
 
         FloatBuffer _falloff;
@@ -29,20 +28,14 @@ namespace swarm {
         // Average decay
         float _alpha;
 
-        // Trace decay
-        float _beta;
-
         // Hardness
         float _gamma;
-
-        // Exploration
-        float _epsilon;
 
         // Ticks to try an arm
         int _playTime;
 
         OptimizerMAB()
-        : _timer(0), _alpha(0.001f), _beta(0.02f), _gamma(0.1f), _epsilon(0.1f), _playTime(32)
+        : _timer(0), _alpha(0.01f), _gamma(0.1f), _playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
