@@ -12,7 +12,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
         // Find new max index
         int maxIndex = 0;
 
-        for (int i = 0; i < _numArms; i++) {
+        for (int i = 1; i < _numArms; i++) {
             int di = pos * _numArms + i;
 
             if (_values[layerIndex][di] > _values[layerIndex][pos * _numArms + maxIndex])
@@ -41,7 +41,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
 
     _numArms = numArms;
 
-    std::uniform_real_distribution<float> armDist(-0.0001f, 0.0001f);
+    std::uniform_real_distribution<float> armDist(-0.001f, 0.001f);
 
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {

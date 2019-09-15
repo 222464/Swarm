@@ -8,6 +8,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     int paramStartIndex = _paramsPerMap * pos.z;
 
     float activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
+    int count = 0;
 
     for (int dx = -_spatial._filterRadius; dx <= _spatial._filterRadius; dx++)
         for (int dy = -_spatial._filterRadius; dy <= _spatial._filterRadius; dy++) {
@@ -19,6 +20,8 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
 
                     activation += _parameters[wi] * inputStates[address3(Int3(dPos.x, dPos.y, z), _inputSize)];
                 }
+
+                count += _inputSize.z;
             }
         }
 
@@ -37,6 +40,8 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
 
                         recurrentActivation += _parameters[wi] * _statesPrev[address3(Int3(dPos.x, dPos.y, z), stateSize)];
                     }
+
+                    count += _numMaps;
                 }
             }
 
@@ -45,7 +50,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     
     int stateIndex = address3(pos, stateSize);
 
-    _states[stateIndex] = std::tanh(activation * _actScalar);
+    _states[stateIndex] = std::tanh(activation / std::max(1, count) * _actScalar);
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius) {
