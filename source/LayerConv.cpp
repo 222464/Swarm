@@ -8,7 +8,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     int paramStartIndex = _paramsPerMap * pos.z;
 
     float activation = _parameters[paramStartIndex + _paramsPerMap - 1]; // Bias
-    int count = 0;
+    int count = 1;
 
     for (int dx = -_spatial._filterRadius; dx <= _spatial._filterRadius; dx++)
         for (int dy = -_spatial._filterRadius; dy <= _spatial._filterRadius; dy++) {

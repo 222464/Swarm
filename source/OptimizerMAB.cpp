@@ -6,17 +6,28 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
 
+    // Commit selected
+    _committed[layerIndex][diPrev] = 1;
+
+    // Update reward
     _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]);
 
     if (select) {
         // Find new max index
         int maxIndex = 0;
+        float maxValue = -999999.0f;
 
         for (int i = 1; i < _numArms; i++) {
             int di = pos * _numArms + i;
 
-            if (_values[layerIndex][di] > _values[layerIndex][pos * _numArms + maxIndex])
+            if (_committed[layerIndex][di] == 0)
+                continue;
+
+            if (_values[layerIndex][di] > maxValue) {
+                maxValue = _values[layerIndex][di];
+
                 maxIndex = i;
+            }
         }
         
         // Exploration
@@ -29,41 +40,26 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
 
             _indices[layerIndex][pos] = std::min(_numArms - 1, std::max(0, maxIndex + delta));
         }
-    }
 
-    // Set parameter/weight
-    (*parameters)[pos] = (static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1)) * 2.0f - 1.0f;
+        // Set parameter/weight
+        (*parameters)[pos] = logit(static_cast<float>(_indices[layerIndex][pos] + 1) / static_cast<float>(_numArms + 1));
+    }
 }
 
 void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
     _values.resize(numParameters.size());
+    _committed.resize(numParameters.size());
     _indices.resize(numParameters.size());
 
     _numArms = numArms;
 
-    std::uniform_real_distribution<float> armDist(-0.001f, 0.001f);
-
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
-            _values[i].resize(numParameters[i] * _numArms);
+            _values[i].resize(numParameters[i] * _numArms, 0.0f);
 
-            _indices[i].resize(numParameters[i]);
+            _committed[i].resize(numParameters[i] * _numArms, 0);
 
-            // Random init
-            for (int j = 0; j < numParameters[i]; j++) {
-                int maxIndex = 0;
-
-                for (int k = 0; k < _numArms; k++) {
-                    int index = j * _numArms + k;
-
-                    _values[i][index] = armDist(cs._rng);
-
-                    if (_values[i][index] > _values[i][j * _numArms + maxIndex])
-                        maxIndex = k;
-                }
-
-                _indices[i][j] = maxIndex;
-            } 
+            _indices[i].resize(numParameters[i], _numArms / 2);
         }
     }
 }
