@@ -31,6 +31,7 @@ namespace swarm {
         std::vector<int> getNumParameters();
         int getTotalNumParameters();
         std::vector<FloatBuffer*> getParameters();
+        std::vector<FloatBuffer*> getGrads();
 
         std::vector<std::shared_ptr<Layer>> &getLayers() {
             return _layers;
