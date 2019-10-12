@@ -1,5 +1,5 @@
 #include "OptimizerMAB.h"
-#include <iostream>
+
 using namespace swarm;
 
 void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select) {
@@ -37,8 +37,6 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
             std::normal_distribution<float> noiseDist(0.0f, 1.0f);
 
             int delta = std::round((*grads)[pos] * _epsilon);
-
-            std::cout << delta << std::endl;
 
             _indices[layerIndex][pos] = std::min(_numArms - 1, std::max(0, maxIndex + delta));
         }
