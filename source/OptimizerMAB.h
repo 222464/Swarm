@@ -7,7 +7,6 @@ namespace swarm {
     class OptimizerMAB : public Optimizer {
     private:
         std::vector<FloatBuffer> _values;
-        std::vector<IntBuffer> _committed;
         std::vector<IntBuffer> _indices;
 
         // Timer for play time

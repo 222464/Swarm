@@ -6,22 +6,15 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
 
-    if (_committed[layerIndex][diPrev])
-        _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]); // Update reward
-
-    // Commit selected
-    _committed[layerIndex][diPrev] = 1;
+    _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]); // Update reward
 
     if (select) {
         // Find new max index
         int maxIndex = 0;
         float maxValue = -999999.0f;
 
-        for (int i = 1; i < _numArms; i++) {
+        for (int i = 0; i < _numArms; i++) {
             int di = pos * _numArms + i;
-
-            if (_committed[layerIndex][di] == 0)
-                continue;
 
             if (_values[layerIndex][di] > maxValue) {
                 maxValue = _values[layerIndex][di];
@@ -46,16 +39,18 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
 
 void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
     _values.resize(numParameters.size());
-    _committed.resize(numParameters.size());
     _indices.resize(numParameters.size());
 
     _numArms = numArms;
 
+    std::uniform_real_distribution<float> noiseDist(-0.001f, 0.001f);
+
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
-            _values[i].resize(numParameters[i] * _numArms, 0.0f);
+            _values[i].resize(numParameters[i] * _numArms);
 
-            _committed[i].resize(numParameters[i] * _numArms, 0);
+            for (int j = 0; j < _values[i].size(); j++)
+                _values[i][j] = noiseDist(cs._rng);
 
             _indices[i].resize(numParameters[i], _numArms / 2);
         }
