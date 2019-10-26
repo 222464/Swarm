@@ -6,11 +6,11 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
 
+    if (_committed[layerIndex][diPrev])
+        _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]); // Update reward
+
     // Commit selected
     _committed[layerIndex][diPrev] = 1;
-
-    // Update reward
-    _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]);
 
     if (select) {
         // Find new max index
