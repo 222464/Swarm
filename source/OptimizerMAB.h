@@ -8,6 +8,7 @@ namespace swarm {
     private:
         std::vector<FloatBuffer> _values;
         std::vector<IntBuffer> _indices;
+        FloatBuffer _falloff;
 
         // Timer for play time
         int _timer;
@@ -26,6 +27,9 @@ namespace swarm {
         // Average decay
         float _alpha;
 
+        // Falloff strength
+        float _gamma;
+
         // Exploration amount
         float _epsilon;
 
@@ -33,12 +37,14 @@ namespace swarm {
         int _playTime;
 
         OptimizerMAB()
-        : _timer(0), _alpha(0.001f), _epsilon(0.7f), _playTime(8)
+        : _timer(0), _alpha(0.001f), _gamma(0.03f), _epsilon(0.7f), _playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
 
         void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) override;
+
+        void genFalloff();
 
         int getTimer() const {
             return _timer;

@@ -4,9 +4,11 @@ using namespace swarm;
 
 void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select) {
     // Update previous average reward
-    int diPrev = pos * _numArms + _indices[layerIndex][pos];
+    for (int i = 0; i < _numArms; i++) {
+        int di = pos * _numArms + i;
 
-    _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]); // Update reward
+        _values[layerIndex][di] += _alpha * _falloff[std::abs(_indices[layerIndex][pos] - i)] * (reward - _values[layerIndex][di]);
+    }
 
     if (select) {
         // Find new max index
@@ -55,6 +57,10 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
             _indices[i].resize(numParameters[i], _numArms / 2);
         }
     }
+
+    _falloff.resize(_numArms);
+
+    genFalloff();
 }
 
 void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) {
@@ -81,4 +87,9 @@ void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parame
 
     if (_timer > 0)
         _timer--;
+}
+
+void OptimizerMAB::genFalloff() {
+    for (int i = 0; i < _numArms; i++)
+        _falloff[i] = std::exp(-_gamma * i * i);
 }
