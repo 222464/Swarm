@@ -2,7 +2,7 @@
 
 using namespace swarm;
 
-void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select) {
+void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward, bool select) {
     // Update previous average reward
     int diPrev = pos * _numArms + _indices[layerIndex][pos];
 
@@ -27,7 +27,9 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
         if (_epsilon == 0.0f)
             _indices[layerIndex][pos] = maxIndex;
         else { // Explore around index with Gaussian
-            int delta = std::round((*grads)[pos] * _epsilon);
+            std::normal_distribution<float> normDist(0.0f, 1.0f);
+
+            int delta = std::round(normDist(rng) * _epsilon);
 
             _indices[layerIndex][pos] = std::min(_numArms - 1, std::max(0, maxIndex + delta));
         }
@@ -57,7 +59,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
     }
 }
 
-void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) {
+void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) {
     bool select = _timer == 0;
 
     // Per-parameter optimization
@@ -72,7 +74,7 @@ void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parame
         for (int x = 0; x < _indices[i].size(); x++)
             step(x, cs._rng, i, parameters[i], grads[i], reward, select);
 #else
-        runKernel1(cs, std::bind(stepKernel, std::placeholders::_1, std::placeholders::_2, this, i, parameters[i], grads[i], reward, select), _indices[i].size(), cs._rng, cs._batchSize1);
+        runKernel1(cs, std::bind(stepKernel, std::placeholders::_1, std::placeholders::_2, this, i, parameters[i], reward, select), _indices[i].size(), cs._rng, cs._batchSize1);
 #endif
     }
 
