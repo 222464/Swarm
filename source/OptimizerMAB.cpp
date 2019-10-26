@@ -72,7 +72,7 @@ void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parame
 
 #ifdef KERNEL_NOTHREAD
         for (int x = 0; x < _indices[i].size(); x++)
-            step(x, cs._rng, i, parameters[i], grads[i], reward, select);
+            step(x, cs._rng, i, parameters[i], reward, select);
 #else
         runKernel1(cs, std::bind(stepKernel, std::placeholders::_1, std::placeholders::_2, this, i, parameters[i], reward, select), _indices[i].size(), cs._rng, cs._batchSize1);
 #endif
