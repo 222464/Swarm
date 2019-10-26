@@ -17,7 +17,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
         int maxIndex = 0;
         float maxValue = -999999.0f;
 
-        for (int i = 1; i < _numArms; i++) {
+        for (int i = 0; i < _numArms; i++) {
             int di = pos * _numArms + i;
 
             if (_committed[layerIndex][di] == 0)
