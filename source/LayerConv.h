@@ -60,10 +60,6 @@ namespace swarm {
             return &_parameters;
         }
 
-        FloatBuffer* getGrads() override {
-            return &_grads;
-        }
-
         FloatBuffer &getStatesPrev() {
             return _statesPrev;
         }
