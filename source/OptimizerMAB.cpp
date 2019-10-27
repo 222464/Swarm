@@ -8,6 +8,8 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
 
     if (_committed[layerIndex][diPrev])
         _values[layerIndex][diPrev] += _alpha * (reward - _values[layerIndex][diPrev]); // Update reward
+    else
+        _values[layerIndex][diPrev] = reward;
 
     // Commit selected
     _committed[layerIndex][diPrev] = 1;
