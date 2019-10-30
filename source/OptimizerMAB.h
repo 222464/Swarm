@@ -24,9 +24,6 @@ namespace swarm {
         }
 
     public:
-        // Average decay
-        float _alpha;
-
         // Falloff strength
         float _gamma;
 
@@ -34,7 +31,7 @@ namespace swarm {
         int _playTime;
 
         OptimizerMAB()
-        : _timer(0), _alpha(1.0f), _gamma(0.04f), _playTime(8)
+        : _timer(0), _gamma(0.05f), _playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);

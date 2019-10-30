@@ -7,7 +7,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     for (int i = 0; i < _numArms; i++) {
         int di = pos * _numArms + i;
 
-        _values[layerIndex][di] += _alpha * _falloff[std::abs(_indices[layerIndex][pos] - i)] * reward;
+        _values[layerIndex][di] += _falloff[std::abs(_indices[layerIndex][pos] - i)] * reward;
     }
 
     if (select) {
