@@ -51,43 +51,6 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     int stateIndex = address3(pos, stateSize);
 
     _states[stateIndex] = std::tanh(activation * std::sqrt(1.0f / count) * _actScalar);
-
-    // Determine grad
-    std::uniform_real_distribution<float> targetDist(-1.0f, 1.0f);
-
-    float error = targetDist(rng) - _states[stateIndex];
-
-    _grads[paramStartIndex + _paramsPerMap - 1] = error;
-
-    for (int dx = -_spatial._filterRadius; dx <= _spatial._filterRadius; dx++)
-        for (int dy = -_spatial._filterRadius; dy <= _spatial._filterRadius; dy++) {
-            Int2 dPos = Int2(pos.x * _spatialFilterStride + dx, pos.y * _spatialFilterStride + dy);
-            
-            if (inBounds0(dPos, Int2(_inputSize.x, _inputSize.y))) {
-                for (int z = 0; z < _inputSize.z; z++) {
-                    int wi = paramStartIndex + (dx + _spatial._filterRadius) + (dy + _spatial._filterRadius) * _spatial._filterDiam + z * _spatial._filterArea;
-
-                    _grads[wi] = error * inputStates[address3(Int3(dPos.x, dPos.y, z), _inputSize)];
-                }
-            }
-        }
-
-    if (_recurrent._filterRadius >= 0) {
-        int recurrentParamStartIndex = paramStartIndex + _spatial._filterArea * _inputSize.z;
-
-        for (int dx = -_recurrent._filterRadius; dx <= _recurrent._filterRadius; dx++)
-            for (int dy = -_recurrent._filterRadius; dy <= _recurrent._filterRadius; dy++) {
-                Int2 dPos = Int2(pos.x + dx, pos.y + dy);
-                
-                if (inBounds0(dPos, Int2(stateSize.x, stateSize.y))) {
-                    for (int z = 0; z < _numMaps; z++) {
-                        int wi = recurrentParamStartIndex + (dx + _recurrent._filterRadius) + (dy + _recurrent._filterRadius) * _recurrent._filterDiam + z * _recurrent._filterArea;
-
-                        _grads[wi] = error * _statesPrev[address3(Int3(dPos.x, dPos.y, z), stateSize)];
-                    }
-                }
-            }
-    }
 }
 
 void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius) {
@@ -122,7 +85,6 @@ void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, in
     _paramsPerMap = _spatial._filterArea * _inputSize.z + _recurrent._filterArea * _numMaps + 1; // +1 for bias
 
     _parameters.resize(_paramsPerMap * _numMaps, 0.0f);
-    _grads = _parameters;
 }
 
 void LayerConv::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {

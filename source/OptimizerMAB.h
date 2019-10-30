@@ -17,10 +17,10 @@ namespace swarm {
         int _numArms;
 
         // Kernels
-        void step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select);
+        void step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward, bool select);
 
-        static void stepKernel(int pos, std::mt19937 &rng, OptimizerMAB* p, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select) {
-            p->step(pos, rng, layerIndex, parameters, grads, reward, select);
+        static void stepKernel(int pos, std::mt19937 &rng, OptimizerMAB* p, int layerIndex, FloatBuffer* parameters, float reward, bool select) {
+            p->step(pos, rng, layerIndex, parameters, reward, select);
         }
 
     public:
@@ -30,19 +30,16 @@ namespace swarm {
         // Falloff strength
         float _gamma;
 
-        // Exploration amount
-        float _epsilon;
-
         // Ticks to try an arm
         int _playTime;
 
         OptimizerMAB()
-        : _timer(0), _alpha(0.001f), _gamma(0.03f), _epsilon(0.7f), _playTime(8)
+        : _timer(0), _alpha(1.0f), _gamma(0.04f), _playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
 
-        void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) override;
+        void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) override;
 
         void genFalloff();
 

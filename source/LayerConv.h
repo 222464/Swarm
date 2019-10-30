@@ -23,7 +23,6 @@ namespace swarm {
         int _paramsPerMap;
 
         FloatBuffer _parameters;
-        FloatBuffer _grads;
 
         FloatBuffer _statesPrev;
 
@@ -40,7 +39,7 @@ namespace swarm {
         float _recurrentScalar;
 
         LayerConv()
-        : _actScalar(3.0f),
+        : _actScalar(5.0f),
         _recurrentScalar(0.5f)
         {}
 
@@ -58,10 +57,6 @@ namespace swarm {
 
         FloatBuffer* getParameters() override {
             return &_parameters;
-        }
-
-        FloatBuffer* getGrads() override {
-            return &_grads;
         }
 
         FloatBuffer &getStatesPrev() {
