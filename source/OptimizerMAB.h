@@ -26,14 +26,14 @@ namespace swarm {
         // Average decay
         float alpha;
 
-        // Exploration amount
+        // Exploration overshoot
         float epsilon;
 
         // Ticks to try an arm
         int playTime;
 
         OptimizerMAB()
-        : timer(0), alpha(0.01f), epsilon(0.6f), playTime(8)
+        : timer(0), alpha(0.01f), epsilon(0.5f), playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
