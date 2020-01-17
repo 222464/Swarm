@@ -26,9 +26,9 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
         std::normal_distribution<float> distNorm(0.0f, 1.0f);
         std::uniform_real_distribution<float> dist01(0.0f, 1.0f);
 
-        float delta = maxIndex - indices[layerIndex][pos];
+        float delta = maxIndex + distNorm(rng) * epsilon - indices[layerIndex][pos];
 
-        indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(indices[layerIndex][pos] + dist01(rng) * delta + distNorm(rng) * epsilon))));
+        indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(indices[layerIndex][pos] + dist01(rng) * delta))));
 
         // Set parameter/weight
         (*parameters)[pos] = (static_cast<float>(indices[layerIndex][pos] + 1) / static_cast<float>(numArms + 1)) * 2.0f - 1.0f;
