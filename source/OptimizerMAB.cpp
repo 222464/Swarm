@@ -43,7 +43,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
     values.resize(numParameters.size());
     indices.resize(numParameters.size());
 
-    numArms = numArms;
+    this->numArms = numArms;
 
     std::uniform_real_distribution<float> noiseDist(-0.001f, 0.001f);
 
