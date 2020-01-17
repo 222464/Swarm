@@ -6,14 +6,14 @@ namespace swarm {
     // Multi-armed bandit (MAB) optimizer
     class OptimizerMAB : public Optimizer {
     private:
-        std::vector<FloatBuffer> _values;
-        std::vector<IntBuffer> _indices;
+        std::vector<FloatBuffer> values;
+        std::vector<IntBuffer> indices;
 
         // Timer for play time
-        int _timer;
+        int timer;
 
         // Number of arms
-        int _numArms;
+        int numArms;
 
         // Kernels
         void step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward, bool select);
@@ -24,16 +24,16 @@ namespace swarm {
 
     public:
         // Average decay
-        float _alpha;
+        float alpha;
 
         // Exploration amount
-        float _epsilon;
+        float epsilon;
 
         // Ticks to try an arm
-        int _playTime;
+        int playTime;
 
         OptimizerMAB()
-        : _timer(0), _alpha(0.01f), _epsilon(0.8f), _playTime(8)
+        : timer(0), alpha(0.01f), epsilon(0.8f), playTime(8)
         {}
 
         void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
@@ -41,19 +41,19 @@ namespace swarm {
         void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) override;
 
         int getTimer() const {
-            return _timer;
+            return timer;
         }
 
         int getNumArms() const {
-            return _numArms;
+            return numArms;
         }
 
         std::vector<FloatBuffer> &getValues() {
-            return _values;
+            return values;
         } 
 
         std::vector<IntBuffer> &getIndices() {
-            return _indices;
+            return indices;
         }
     };
 }

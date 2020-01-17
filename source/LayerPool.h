@@ -6,11 +6,11 @@ namespace swarm {
     // 2D pooling layer
     class LayerPool : public Layer {
     private:
-        Int3 _inputSize;
-        Int3 _stateSize;
+        Int3 inputSize;
+        Int3 stateSize;
 
         // Downsampling factor
-        int _poolDiv;
+        int poolDiv;
 
         void pool(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates);
 
@@ -29,7 +29,7 @@ namespace swarm {
         }
 
         Int3 getStateSize() const override {
-            return _stateSize;
+            return stateSize;
         }
 
         FloatBuffer* getParameters() override {

@@ -10,7 +10,7 @@ namespace swarm {
     // A hierarchy of layers (layers are maintained separately)
     class Hierarchy {
     private:
-        std::vector<std::shared_ptr<Layer>> _layers;
+        std::vector<std::shared_ptr<Layer>> layers;
 
     public:
         Hierarchy() {}
@@ -33,7 +33,7 @@ namespace swarm {
         std::vector<FloatBuffer*> getParameters();
 
         std::vector<std::shared_ptr<Layer>> &getLayers() {
-            return _layers;
+            return layers;
         }
     };
 }

@@ -6,37 +6,37 @@ void LayerPool::pool(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inpu
     float maxValue = -1.0f;
 
     // Max pooling
-    for (int dx = 0; dx < _poolDiv; dx++)
-        for (int dy = 0; dy < _poolDiv; dy++) {
-            Int2 dPos = Int2(pos.x * _poolDiv + dx, pos.y * _poolDiv + dy);
+    for (int dx = 0; dx < poolDiv; dx++)
+        for (int dy = 0; dy < poolDiv; dy++) {
+            Int2 dPos = Int2(pos.x * poolDiv + dx, pos.y * poolDiv + dy);
 
-            if (inBounds0(dPos, Int2(_inputSize.x, _inputSize.y))) {
-                float value = inputStates[address3(Int3(dPos.x, dPos.y, pos.z), _inputSize)];
+            if (inBounds0(dPos, Int2(inputSize.x, inputSize.y))) {
+                float value = inputStates[address3(Int3(dPos.x, dPos.y, pos.z), inputSize)];
 
                 maxValue = std::max(maxValue, value);
             }
         }
 
-    _states[address3(pos, _stateSize)] = maxValue;
+    states[address3(pos, stateSize)] = maxValue;
 }
 
 void LayerPool::create(ComputeSystem &cs, const Int3 &inputSize, int poolDiv) {
-    _inputSize = inputSize;
-    _poolDiv = poolDiv;
+    this->inputSize = inputSize;
+    this->poolDiv = poolDiv;
 
-    _stateSize = Int3(_inputSize.x / _poolDiv, _inputSize.y / _poolDiv, _inputSize.z);
+    stateSize = Int3(inputSize.x / poolDiv, inputSize.y / poolDiv, inputSize.z);
 
-    _states.resize(_stateSize.x * _stateSize.y * _stateSize.z, 0.0f);
+    states.resize(stateSize.x * stateSize.y * stateSize.z, 0.0f);
 }
 
 void LayerPool::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {
     // Convolve
-#ifdef KERNEL_NOTHREAD
-    for (int x = 0; x < _stateSize.x; x++)
-        for (int y = 0; y < _stateSize.y; y++)
-            for (int z = 0; z < _stateSize.z; z++)
-                pool(Int3(x, y, z), cs._rng, inputStates);
+#ifdef KERNEL_NO_THREAD
+    for (int x = 0; x < stateSize.x; x++)
+        for (int y = 0; y < stateSize.y; y++)
+            for (int z = 0; z < stateSize.z; z++)
+                pool(Int3(x, y, z), cs.rng, inputStates);
 #else
-    runKernel3(cs, std::bind(LayerPool::poolKernel, std::placeholders::_1, std::placeholders::_2, this, inputStates), _stateSize, cs._rng, cs._batchSize3);
+    runKernel3(cs, std::bind(LayerPool::poolKernel, std::placeholders::_1, std::placeholders::_2, this, inputStates), stateSize, cs.rng, cs.batchSize3);
 #endif
 }

@@ -16,7 +16,7 @@ void swarm::runKernel1(ComputeSystem &cs, const std::function<void(int, std::mt1
     for (int x = 0; x < batches; x++) {
         int itemBatchSize = std::min(size - x * batchSize, batchSize);
         
-        std::future<void> f = cs._pool.push([](int id, int seed, int pos, int batchSize, const std::function<void(int, std::mt19937 &)> &func) {
+        std::future<void> f = cs.pool.push([](int id, int seed, int pos, int batchSize, const std::function<void(int, std::mt19937 &)> &func) {
             std::mt19937 subRng(seed);
 
             for (int x = 0; x < batchSize; x++)
@@ -44,7 +44,7 @@ void swarm::runKernel2(ComputeSystem &cs, const std::function<void(const Int2 &,
         for (int y = 0; y < batches.y; y++) {
             Int2 itemBatchSize = Int2(std::min(size.x - x * batchSize.x, batchSize.x), std::min(size.y - y * batchSize.y, batchSize.y));
 
-            std::future<void> f = cs._pool.push([](int id, int seed, const Int2 &pos, const Int2 &batchSize, const std::function<void(const Int2 &, std::mt19937 &)> &func) {
+            std::future<void> f = cs.pool.push([](int id, int seed, const Int2 &pos, const Int2 &batchSize, const std::function<void(const Int2 &, std::mt19937 &)> &func) {
                 std::mt19937 subRng(seed);
 
                 for (int x = 0; x < batchSize.x; x++)
@@ -79,7 +79,7 @@ void swarm::runKernel3(ComputeSystem &cs, const std::function<void(const Int3 &,
             for (int z = 0; z < batches.z; z++) {
                 Int3 itemBatchSize = Int3(std::min(size.x - x * batchSize.x, batchSize.x), std::min(size.y - y * batchSize.y, batchSize.y), std::min(size.z - z * batchSize.z, batchSize.z));
 
-                std::future<void> f = cs._pool.push([](int id, int seed, const Int3 &pos, const Int3 &batchSize, const std::function<void(const Int3 &, std::mt19937 &)> &func) {
+                std::future<void> f = cs.pool.push([](int id, int seed, const Int3 &pos, const Int3 &batchSize, const std::function<void(const Int3 &, std::mt19937 &)> &func) {
                     std::mt19937 subRng(seed);
 
                     for (int x = 0; x < batchSize.x; x++)

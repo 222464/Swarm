@@ -7,24 +7,24 @@ namespace swarm {
     class LayerConv : public Layer {
     public:
         struct FilterDesc {
-            int _filterRadius;
-            int _filterDiam;
-            int _filterArea;
+            int filterRadius;
+            int filterDiam;
+            int filterArea;
         };
 
     private:
-        Int3 _inputSize;
-        int _numMaps;
+        Int3 inputSize;
+        int numMaps;
 
-        FilterDesc _spatial;
-        int _spatialFilterStride;
-        FilterDesc _recurrent;
+        FilterDesc spatial;
+        int spatialFilterStride;
+        FilterDesc recurrent;
         
-        int _paramsPerMap;
+        int paramsPerMap;
 
-        FloatBuffer _parameters;
+        FloatBuffer parameters;
 
-        FloatBuffer _statesPrev;
+        FloatBuffer statesPrev;
 
         // Kernels
         void convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates);
@@ -35,12 +35,12 @@ namespace swarm {
 
     public:
         // Activation scalar (how quickly activation function saturates)
-        float _actScalar;
-        float _recurrentScalar;
+        float actScalar;
+        float recurrentScalar;
 
         LayerConv()
-        : _actScalar(4.0f),
-        _recurrentScalar(0.5f)
+        : actScalar(4.0f),
+        recurrentScalar(0.5f)
         {}
 
         void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius);
@@ -52,15 +52,15 @@ namespace swarm {
         }
 
         Int3 getStateSize() const override {
-            return Int3(_inputSize.x / _spatialFilterStride, _inputSize.y / _spatialFilterStride, _numMaps);
+            return Int3(inputSize.x / spatialFilterStride, inputSize.y / spatialFilterStride, numMaps);
         }
 
         FloatBuffer* getParameters() override {
-            return &_parameters;
+            return &parameters;
         }
 
         FloatBuffer &getStatesPrev() {
-            return _statesPrev;
+            return statesPrev;
         }
     };
 }

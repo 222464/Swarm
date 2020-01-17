@@ -6,7 +6,7 @@ namespace swarm {
     // Base class for layers
     class Layer {
     protected:
-        FloatBuffer _states;
+        FloatBuffer states;
         
     public:
         virtual ~Layer() {}
@@ -22,7 +22,7 @@ namespace swarm {
         virtual std::shared_ptr<Layer> clone() const = 0;
 
         FloatBuffer &getStates() {
-            return _states;
+            return states;
         }
     };
 }
