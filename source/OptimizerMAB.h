@@ -26,7 +26,7 @@ namespace swarm {
         // Average decay
         float alpha;
 
-        // Exploration overshoot
+        // Exploration
         float epsilon;
 
         // Ticks to try an arm
