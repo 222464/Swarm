@@ -25,7 +25,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
         
         std::normal_distribution<float> exploreDist(0.0f, 1.0f);
 
-        indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(maxIndex + exploreDist(rng)))));
+        indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(maxIndex + epsilon * exploreDist(rng)))));
 
         // Set parameter/weight
         (*parameters)[pos] = (static_cast<float>(indices[layerIndex][pos] + 1) / static_cast<float>(numArms + 1)) * 2.0f - 1.0f;
@@ -39,6 +39,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
     this->numArms = numArms;
 
     std::uniform_real_distribution<float> noiseDist(1.0f, 2.0f);
+    std::uniform_int_distribution<int> armDist(0, numArms - 1);
 
     for (int i = 0; i < numParameters.size(); i++) {
         if (numParameters[i] > 0) {
@@ -47,7 +48,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
             for (int j = 0; j < values[i].size(); j++)
                 values[i][j] = noiseDist(cs.rng);
 
-            indices[i].resize(numParameters[i], numArms / 2);
+            indices[i].resize(numParameters[i], armDist(cs.rng));
         }
     }
 }
