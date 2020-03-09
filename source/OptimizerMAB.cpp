@@ -2,7 +2,7 @@
 
 using namespace swarm;
 
-void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, float reward, bool select) {
+void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select) {
     // Update previous average reward
     int diPrev = pos * numArms + indices[layerIndex][pos];
 
@@ -23,9 +23,9 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
             }
         }
         
-        std::normal_distribution<float> exploreDist(0.0f, 1.0f);
+        std::uniform_real_distribution<float> dist01(0.0f, 1.0f);
 
-        indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(maxIndex + epsilon * exploreDist(rng)))));
+        indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(maxIndex + epsilon * dist01(rng) * (*grads)[pos]))));
 
         // Set parameter/weight
         (*parameters)[pos] = (static_cast<float>(indices[layerIndex][pos] + 1) / static_cast<float>(numArms + 1)) * 2.0f - 1.0f;
@@ -53,7 +53,7 @@ void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParamete
     }
 }
 
-void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, float reward) {
+void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) {
     bool select = timer == 0;
 
     // Per-parameter optimization
@@ -66,9 +66,9 @@ void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parame
 
 #ifdef KERNEL_NO_THREAD
         for (int x = 0; x < indices[i].size(); x++)
-            step(x, cs.rng, i, parameters[i], reward, select);
+            step(x, cs.rng, i, parameters[i], grads[i], reward, select);
 #else
-        runKernel1(cs, std::bind(stepKernel, std::placeholders::_1, std::placeholders::_2, this, i, parameters[i], reward, select), indices[i].size(), cs.rng, cs.batchSize1);
+        runKernel1(cs, std::bind(stepKernel, std::placeholders::_1, std::placeholders::_2, this, i, parameters[i], grads[i], reward, select), indices[i].size(), cs.rng, cs.batchSize1);
 #endif
     }
 

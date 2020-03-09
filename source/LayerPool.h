@@ -35,5 +35,9 @@ namespace swarm {
         FloatBuffer* getParameters() override {
             return nullptr;
         }
+
+        FloatBuffer* getGrads() override {
+            return nullptr;
+        }
     };
 }

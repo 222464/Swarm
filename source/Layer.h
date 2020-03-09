@@ -17,6 +17,7 @@ namespace swarm {
         virtual Int3 getStateSize() const = 0;
 
         virtual FloatBuffer* getParameters() = 0;
+        virtual FloatBuffer* getGrads() = 0;
 
         // Duplication factory
         virtual std::shared_ptr<Layer> clone() const = 0;

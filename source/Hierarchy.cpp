@@ -27,8 +27,9 @@ void Hierarchy::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {
 
 void Hierarchy::optimize(ComputeSystem &cs, Optimizer* opt, float reward) {
     std::vector<FloatBuffer*> parameters = getParameters();
+    std::vector<FloatBuffer*> grads = getGrads();
 
-    opt->optimize(cs, parameters, reward);
+    opt->optimize(cs, parameters, grads, reward);
 }
 
 std::vector<int> Hierarchy::getNumParameters() {
@@ -69,4 +70,17 @@ std::vector<FloatBuffer*> Hierarchy::getParameters() {
     }
 
     return parameters;
+}
+
+std::vector<FloatBuffer*> Hierarchy::getGrads() {
+    std::vector<FloatBuffer*> grads(layers.size());
+
+    // Gather grads
+    for (int i = 0; i < layers.size(); i++) {
+        assert(layers[i] != nullptr);
+
+        grads[i] = layers[i]->getGrads();
+    }
+
+    return grads;
 }

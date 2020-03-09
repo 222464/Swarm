@@ -23,6 +23,7 @@ namespace swarm {
         int paramsPerMap;
 
         FloatBuffer parameters;
+        FloatBuffer grads;
 
         FloatBuffer statesPrev;
 
@@ -57,6 +58,10 @@ namespace swarm {
 
         FloatBuffer* getParameters() override {
             return &parameters;
+        }
+
+        FloatBuffer* getGrads() override {
+            return &grads;
         }
 
         FloatBuffer &getStatesPrev() {
