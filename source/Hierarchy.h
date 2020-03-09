@@ -20,7 +20,7 @@ namespace swarm {
 
         void operator=(const Hierarchy &other);
 
-        void create(const std::vector<std::shared_ptr<Layer>> &layers);
+        void init(const std::vector<std::shared_ptr<Layer>> &layers);
 
         // Activate off of input states
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates);

@@ -44,7 +44,7 @@ namespace swarm {
         recurrentScalar(0.5f)
         {}
 
-        void create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius);
+        void init(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius);
 
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
         

@@ -32,7 +32,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     }
 }
 
-void OptimizerMAB::create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
+void OptimizerMAB::init(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
     values.resize(numParameters.size());
     indices.resize(numParameters.size());
 

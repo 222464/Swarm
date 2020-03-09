@@ -90,7 +90,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     }
 }
 
-void LayerConv::create(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius) {
+void LayerConv::init(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius) {
     this->inputSize = inputSize;
     this->numMaps = numMaps;
 

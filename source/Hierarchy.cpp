@@ -12,7 +12,7 @@ void Hierarchy::operator=(const Hierarchy &other) {
         layers[i] = other.layers[i]->clone();
 }
 
-void Hierarchy::create(const std::vector<std::shared_ptr<Layer>> &layers) {
+void Hierarchy::init(const std::vector<std::shared_ptr<Layer>> &layers) {
     this->layers = layers;
 }
 

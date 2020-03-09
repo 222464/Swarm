@@ -20,7 +20,7 @@ void LayerPool::pool(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inpu
     states[address3(pos, stateSize)] = maxValue;
 }
 
-void LayerPool::create(ComputeSystem &cs, const Int3 &inputSize, int poolDiv) {
+void LayerPool::init(ComputeSystem &cs, const Int3 &inputSize, int poolDiv) {
     this->inputSize = inputSize;
     this->poolDiv = poolDiv;
 

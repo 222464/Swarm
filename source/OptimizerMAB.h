@@ -36,7 +36,7 @@ namespace swarm {
         : timer(0), alpha(0.01f), epsilon(0.8f), playTime(8)
         {}
 
-        void create(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
+        void init(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
 
         void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) override;
 

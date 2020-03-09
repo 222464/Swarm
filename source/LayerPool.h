@@ -20,7 +20,7 @@ namespace swarm {
 
     public:
         // Create with given downsampling factor
-        void create(ComputeSystem &cs, const Int3 &inputSize, int poolDiv);
+        void init(ComputeSystem &cs, const Int3 &inputSize, int poolDiv);
 
         void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
 
