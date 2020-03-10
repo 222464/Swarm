@@ -9,21 +9,27 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     values[layerIndex][diPrev] += alpha * (reward - values[layerIndex][diPrev]); // Update reward
 
     if (select) {
-        // Find new max index
-        int maxIndex = 0;
-        float maxValue = -999999.0f;
+        std::uniform_real_distribution<float> dist01(0.0f, 1.0f);
 
-        for (int i = 0; i < numArms; i++) {
-            int di = pos * numArms + i;
+        if (dist01(rng) < epsilon)
+            indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(indices[layerIndex][pos] + beta * (*grads)[pos] * numArms))));
+        else {
+            // Find new max index
+            int maxIndex = 0;
+            float maxValue = -999999.0f;
 
-            if (values[layerIndex][di] > maxValue) {
-                maxValue = values[layerIndex][di];
+            for (int i = 0; i < numArms; i++) {
+                int di = pos * numArms + i;
 
-                maxIndex = i;
+                if (values[layerIndex][di] > maxValue) {
+                    maxValue = values[layerIndex][di];
+
+                    maxIndex = i;
+                }
             }
-        }
 
-        indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(maxIndex + epsilon * (*grads)[pos] * numArms))));
+            indices[layerIndex][pos] = maxIndex;
+        }
 
         // Set parameter/weight
         (*parameters)[pos] = (static_cast<float>(indices[layerIndex][pos] + 1) / static_cast<float>(numArms + 1)) * 2.0f - 1.0f;

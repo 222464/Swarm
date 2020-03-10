@@ -55,7 +55,7 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     // Determine grad
     std::uniform_real_distribution<float> targetDist(-1.0f, 1.0f);
 
-    float error = targetDist(rng) - states[stateIndex];//) * (1.0f - states[stateIndex] * states[stateIndex]);
+    float error = (targetDist(rng) - states[stateIndex]) * (1.0f - states[stateIndex] * states[stateIndex]);
 
     grads[paramStartIndex + paramsPerMap - 1] = error;
 
