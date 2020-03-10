@@ -42,7 +42,7 @@ void OptimizerMAB::init(ComputeSystem &cs, const std::vector<int> &numParameters
 
     this->numArms = numArms;
 
-    std::uniform_real_distribution<float> noiseDist(1.0f, 2.0f);
+    std::uniform_real_distribution<float> noiseDist(-0.001f, 0.001f);
     std::uniform_int_distribution<int> armDist(0, numArms - 1);
 
     for (int i = 0; i < numParameters.size(); i++) {
