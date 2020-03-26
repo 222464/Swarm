@@ -41,7 +41,7 @@ namespace swarm {
 
         LayerConv()
         : actScalar(4.0f),
-        recurrentScalar(0.5f)
+        recurrentScalar(0.1f)
         {}
 
         void init(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius);
