@@ -26,9 +26,6 @@ namespace swarm {
         // Average decay
         float alpha;
 
-        // Gradient scale
-        float beta;
-
         // Exploration chance
         float epsilon;
 
@@ -36,7 +33,7 @@ namespace swarm {
         int playTime;
 
         OptimizerMAB()
-        : timer(0), alpha(0.01f), beta(0.01f), epsilon(0.2f), playTime(8)
+        : timer(0), alpha(0.01f), epsilon(0.1f), playTime(8)
         {}
 
         void init(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);

@@ -12,7 +12,7 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
         std::uniform_real_distribution<float> dist01(0.0f, 1.0f);
 
         if (dist01(rng) < epsilon)
-            indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, static_cast<int>(std::round(indices[layerIndex][pos] + beta * (*grads)[pos] * numArms))));
+            indices[layerIndex][pos] = std::min(numArms - 1, std::max(0, indices[layerIndex][pos] + ((*grads)[pos] > 0.0f ? 1 : -1)));
         else {
             // Find new max index
             int maxIndex = 0;
