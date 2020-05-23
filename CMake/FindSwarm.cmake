@@ -16,7 +16,7 @@ if (not "${SWARM_INCLUDE_DIR}" strequal "SWARM_INCLUDE_DIR-NOTFOUND")
 endif()
 
 set(SWARM_NAMES swarm Swarm SWARM)
-find_library()(SWARM_LIBRARY NAMES ${SWARM_NAMES})
+find_library(SWARM_LIBRARY NAMES ${SWARM_NAMES})
 
 # Per-recommendation
 set(SWARM_INCLUDE_DIRS "${SWARM_INCLUDE_DIR}")
