@@ -7,11 +7,11 @@
 #
 if(SWARM_INCLUDE_DIR)
   # Already in cache, be silent
-  set(SWARM_FIND_QUIETLY true)
+  set(SWARM_FIND_QUIETLY TRUE)
 endif(SWARM_INCLUDE_DIR)
 
 find_path(SWARM_INCLUDE_DIR swarm/Hierarchy.h)
-if (not "${SWARM_INCLUDE_DIR}" strequal "SWARM_INCLUDE_DIR-NOTFOUND")
+if (NOT "${SWARM_INCLUDE_DIR}" STREQUAL "SWARM_INCLUDE_DIR-NOTFOUND")
   set(SWARM_INCLUDE_DIR "${SWARM_INCLUDE_DIR}/swarm")
 endif()
 
