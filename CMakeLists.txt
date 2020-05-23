@@ -19,22 +19,20 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 set(SOURCE_PATH "${PROJECT_SOURCE_DIR}/source")
 set(SOURCES
     "${SOURCE_PATH}/swarm/Helpers.cpp"
-    "${SOURCE_PATH}/swarm/SparseCoder.cpp"
-    "${SOURCE_PATH}/swarm/Predictor.cpp"
-    "${SOURCE_PATH}/swarm/Actor.cpp"
     "${SOURCE_PATH}/swarm/Hierarchy.cpp"
-    "${SOURCE_PATH}/swarm/ImageEncoder.cpp"
-	"${SOURCE_PATH}/swarm/SparseMatrix.cpp"
+    "${SOURCE_PATH}/swarm/LayerConv.cpp"
+	"${SOURCE_PATH}/swarm/LayerPool.cpp"
+	"${SOURCE_PATH}/swarm/OptimizerMAB.cpp"
 )
 
 set(HEADERS
+    "${SOURCE_PATH}/swarm/ComputeSystem.h"
 	"${SOURCE_PATH}/swarm/Helpers.h"
-    "${SOURCE_PATH}/swarm/SparseCoder.h"
-    "${SOURCE_PATH}/swarm/Predictor.h"
-    "${SOURCE_PATH}/swarm/Actor.h"
     "${SOURCE_PATH}/swarm/Hierarchy.h"
-    "${SOURCE_PATH}/swarm/ImageEncoder.h"
-	"${SOURCE_PATH}/swarm/SparseMatrix.h"
+    "${SOURCE_PATH}/swarm/Layer.h"
+    "${SOURCE_PATH}/swarm/LayerConv.h"
+	"${SOURCE_PATH}/swarm/LayerPool.h"
+	"${SOURCE_PATH}/swarm/OptimizerMAB.h"
 )
 
 find_package(OpenMP REQUIRED)
