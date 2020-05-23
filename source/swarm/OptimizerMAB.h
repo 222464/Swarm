@@ -53,7 +53,7 @@ namespace swarm {
         :
         timer(0),
         alpha(0.01f),
-        epsilon(0.25f),
+        epsilon(0.1),
         playTime(8)
         {}
 
