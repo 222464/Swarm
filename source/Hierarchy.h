@@ -13,20 +13,35 @@ namespace swarm {
         std::vector<std::shared_ptr<Layer>> layers;
 
     public:
-        Hierarchy() {}
-        Hierarchy(const Hierarchy &other) {
+        Hierarchy()
+        {}
+
+        Hierarchy(
+            const Hierarchy &other
+        ) {
             *this = other;
         }
 
-        void operator=(const Hierarchy &other);
+        void operator=(
+            const Hierarchy &other
+        );
 
-        void init(const std::vector<std::shared_ptr<Layer>> &layers);
+        void init(
+            const std::vector<std::shared_ptr<Layer>> &layers
+        );
 
         // Activate off of input states
-        void activate(ComputeSystem &cs, const FloatBuffer &inputStates);
+        void activate(
+            ComputeSystem &cs,
+            const FloatBuffer &inputStates
+        );
 
         // Optimize with given optimizer and reward
-        void optimize(ComputeSystem &cs, Optimizer* opt, float reward);
+        void optimize(
+            ComputeSystem &cs,
+            Optimizer* opt,
+            float reward
+        );
 
         std::vector<int> getNumParameters();
         int getTotalNumParameters();

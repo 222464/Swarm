@@ -5,24 +5,24 @@
 # SWARM_FOUND, if false, do not try to link to Swarm
 # SWARM_INCLUDE_DIR, where to find Swarm headers
 #
-IF(SWARM_INCLUDE_DIR)
+if(SWARM_INCLUDE_DIR)
   # Already in cache, be silent
-  SET(SWARM_FIND_QUIETLY TRUE)
-ENDIF(SWARM_INCLUDE_DIR)
+  set(SWARM_FIND_QUIETLY true)
+endif(SWARM_INCLUDE_DIR)
 
-FIND_PATH(SWARM_INCLUDE_DIR swarm/Hierarchy.h)
-if (NOT "${SWARM_INCLUDE_DIR}" STREQUAL "SWARM_INCLUDE_DIR-NOTFOUND")
-  SET(SWARM_INCLUDE_DIR "${SWARM_INCLUDE_DIR}/swarm")
-ENDIF()
+find_path(SWARM_INCLUDE_DIR swarm/Hierarchy.h)
+if (not "${SWARM_INCLUDE_DIR}" strequal "SWARM_INCLUDE_DIR-NOTFOUND")
+  set(SWARM_INCLUDE_DIR "${SWARM_INCLUDE_DIR}/swarm")
+endif()
 
-SET(SWARM_NAMES swarm Swarm SWARM)
-FIND_LIBRARY(SWARM_LIBRARY NAMES ${SWARM_NAMES})
+set(SWARM_NAMES swarm Swarm SWARM)
+find_library()(SWARM_LIBRARY NAMES ${SWARM_NAMES})
 
 # Per-recommendation
-SET(SWARM_INCLUDE_DIRS "${SWARM_INCLUDE_DIR}")
-SET(SWARM_LIBRARIES    "${SWARM_LIBRARY}")
+set(SWARM_INCLUDE_DIRS "${SWARM_INCLUDE_DIR}")
+set(SWARM_LIBRARIES    "${SWARM_LIBRARY}")
 
 # handle the QUIETLY and REQUIRED arguments and set SWARM_FOUND to TRUE if
 # all listed variables are TRUE
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Swarm DEFAULT_MSG SWARM_LIBRARY SWARM_INCLUDE_DIR)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Swarm DEFAULT_MSG SWARM_LIBRARY SWARM_INCLUDE_DIR)

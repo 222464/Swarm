@@ -8,5 +8,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ============================================================
 
-This library depends on the [CTPL library](https://github.com/vit-vit/CTPL) for thread pooling.
-See the repository or [its source](./source/ThreadPool.h) for license details with regards to that library.
+This library depends on OpenMP for multithreading.

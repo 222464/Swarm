@@ -5,18 +5,25 @@
 
 using namespace swarm;
 
-void Hierarchy::operator=(const Hierarchy &other) {
+void Hierarchy::operator=(
+    const Hierarchy &other
+) {
     layers.resize(other.layers.size());
 
     for (int i = 0; i < layers.size(); i++)
         layers[i] = other.layers[i]->clone();
 }
 
-void Hierarchy::init(const std::vector<std::shared_ptr<Layer>> &layers) {
+void Hierarchy::init(
+    const std::vector<std::shared_ptr<Layer>> &layers
+) {
     this->layers = layers;
 }
 
-void Hierarchy::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {
+void Hierarchy::activate(
+    ComputeSystem &cs,
+    const FloatBuffer &inputStates
+) {
     // Go through layers
     for (int i = 0; i < layers.size(); i++) {
         assert(layers[i] != nullptr);
@@ -25,7 +32,11 @@ void Hierarchy::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {
     }
 }
 
-void Hierarchy::optimize(ComputeSystem &cs, Optimizer* opt, float reward) {
+void Hierarchy::optimize(
+    ComputeSystem &cs,
+    Optimizer* opt,
+    float reward
+) {
     std::vector<FloatBuffer*> parameters = getParameters();
     std::vector<FloatBuffer*> grads = getGrads();
 

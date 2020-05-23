@@ -28,9 +28,18 @@ namespace swarm {
         FloatBuffer statesPrev;
 
         // Kernels
-        void convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates);
+        void convolve(
+            const Int3 &pos,
+            std::mt19937 &rng,
+            const FloatBuffer &inputStates
+        );
 
-        static void convolveKernel(const Int3 &pos, std::mt19937 &rng, LayerConv* p, const FloatBuffer &inputStates) {
+        static void convolveKernel(
+            const Int3 &pos,
+            std::mt19937 &rng,
+            LayerConv* p,
+            const FloatBuffer &inputStates
+        ) {
             p->convolve(pos, rng, inputStates);
         }
 
@@ -40,13 +49,24 @@ namespace swarm {
         float recurrentScalar;
 
         LayerConv()
-        : actScalar(4.0f),
+        :
+        actScalar(4.0f),
         recurrentScalar(0.1f)
         {}
 
-        void init(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius);
+        void init(
+            ComputeSystem &cs,
+            const Int3 &inputSize,
+            int numMaps,
+            int spatialFilterRadius,
+            int spatialFilterStride,
+            int recurrentFilterRadius
+        );
 
-        void activate(ComputeSystem &cs, const FloatBuffer &inputStates) override;
+        void activate(
+            ComputeSystem &cs,
+            const FloatBuffer &inputStates
+        ) override;
         
         std::shared_ptr<Layer> clone() const override {
             return std::static_pointer_cast<Layer>(std::make_shared<LayerConv>(*this));

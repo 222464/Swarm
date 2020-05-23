@@ -16,9 +16,26 @@ namespace swarm {
         int numArms;
 
         // Kernels
-        void step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select);
+        void step(
+            int pos,
+            std::mt19937 &rng,
+            int layerIndex,
+            FloatBuffer* parameters,
+            const FloatBuffer* grads,
+            float reward,
+            bool select
+        );
 
-        static void stepKernel(int pos, std::mt19937 &rng, OptimizerMAB* p, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select) {
+        static void stepKernel(
+            int pos,
+            std::mt19937 &rng,
+            OptimizerMAB* p,
+            int layerIndex,
+            FloatBuffer* parameters,
+            const FloatBuffer* grads,
+            float reward,
+            bool select
+        ) {
             p->step(pos, rng, layerIndex, parameters, grads, reward, select);
         }
 
@@ -33,12 +50,25 @@ namespace swarm {
         int playTime;
 
         OptimizerMAB()
-        : timer(0), alpha(0.01f), epsilon(0.25f), playTime(8)
+        :
+        timer(0),
+        alpha(0.01f),
+        epsilon(0.25f),
+        playTime(8)
         {}
 
-        void init(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms);
+        void init(
+            ComputeSystem &cs,
+            const std::vector<int> &numParameters,
+            int numArms
+        );
 
-        void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) override;
+        void optimize(
+            ComputeSystem &cs,
+            std::vector<FloatBuffer*> &parameters,
+            const std::vector<FloatBuffer*> &grads,
+            float reward
+        ) override;
 
         int getTimer() const {
             return timer;

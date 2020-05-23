@@ -11,7 +11,10 @@ namespace swarm {
     public:
         virtual ~Layer() {}
 
-        virtual void activate(ComputeSystem &cs, const FloatBuffer &inputStates) = 0;
+        virtual void activate(
+            ComputeSystem &cs,
+            const FloatBuffer &inputStates
+        ) = 0;
 
         // Hidden state size
         virtual Int3 getStateSize() const = 0;

@@ -2,7 +2,15 @@
 
 using namespace swarm;
 
-void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer* parameters, const FloatBuffer* grads, float reward, bool select) {
+void OptimizerMAB::step(
+    int pos,
+    std::mt19937 &rng,
+    int layerIndex,
+    FloatBuffer* parameters,
+    const FloatBuffer* grads,
+    float reward,
+    bool select
+) {
     // Update previous average reward
     int diPrev = pos * numArms + indices[layerIndex][pos];
 
@@ -36,7 +44,11 @@ void OptimizerMAB::step(int pos, std::mt19937 &rng, int layerIndex, FloatBuffer*
     }
 }
 
-void OptimizerMAB::init(ComputeSystem &cs, const std::vector<int> &numParameters, int numArms) {
+void OptimizerMAB::init(
+    ComputeSystem &cs,
+    const std::vector<int> &numParameters,
+    int numArms
+) {
     values.resize(numParameters.size());
     indices.resize(numParameters.size());
 
@@ -57,7 +69,12 @@ void OptimizerMAB::init(ComputeSystem &cs, const std::vector<int> &numParameters
     }
 }
 
-void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) {
+void OptimizerMAB::optimize(
+    ComputeSystem &cs,
+    std::vector<FloatBuffer*> &parameters,
+    const std::vector<FloatBuffer*> &grads,
+    float reward
+) {
     bool select = timer == 0;
 
     // Per-parameter optimization
@@ -68,12 +85,7 @@ void OptimizerMAB::optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parame
             continue;
         }
 
-#ifdef KERNEL_NO_THREAD
-        for (int x = 0; x < indices[i].size(); x++)
-            step(x, cs.rng, i, parameters[i], grads[i], reward, select);
-#else
         runKernel1(cs, std::bind(stepKernel, std::placeholders::_1, std::placeholders::_2, this, i, parameters[i], grads[i], reward, select), indices[i].size(), cs.rng, cs.batchSize1);
-#endif
     }
 
     if (select)

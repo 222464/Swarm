@@ -2,7 +2,11 @@
 
 using namespace swarm;
 
-void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &inputStates) {
+void LayerConv::convolve(
+    const Int3 &pos,
+    std::mt19937 &rng,
+    const FloatBuffer &inputStates
+) {
     Int3 stateSize = getStateSize();
 
     int paramStartIndex = paramsPerMap * pos.z;
@@ -90,7 +94,14 @@ void LayerConv::convolve(const Int3 &pos, std::mt19937 &rng, const FloatBuffer &
     }
 }
 
-void LayerConv::init(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int spatialFilterRadius, int spatialFilterStride, int recurrentFilterRadius) {
+void LayerConv::init(
+    ComputeSystem &cs,
+    const Int3 &inputSize,
+    int numMaps,
+    int spatialFilterRadius,
+    int spatialFilterStride,
+    int recurrentFilterRadius
+) {
     this->inputSize = inputSize;
     this->numMaps = numMaps;
 
@@ -125,18 +136,14 @@ void LayerConv::init(ComputeSystem &cs, const Int3 &inputSize, int numMaps, int 
     grads.resize(parameters.size(), 0.0f);
 }
 
-void LayerConv::activate(ComputeSystem &cs, const FloatBuffer &inputStates) {
+void LayerConv::activate(
+    ComputeSystem &cs,
+    const FloatBuffer &inputStates
+) {
     Int3 stateSize = getStateSize();
 
     // Convolve
-#ifdef KERNEL_NO_THREAD
-    for (int x = 0; x < stateSize.x; x++)
-        for (int y = 0; y < stateSize.y; y++)
-            for (int z = 0; z < stateSize.z; z++)
-                convolve(Int3(x, y, z), cs.rng, inputStates);
-#else
     runKernel3(cs, std::bind(LayerConv::convolveKernel, std::placeholders::_1, std::placeholders::_2, this, inputStates), stateSize, cs.rng, cs.batchSize3);
-#endif
 
     if (recurrent.filterRadius >= 0)
         statesPrev = states;

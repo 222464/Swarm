@@ -8,6 +8,11 @@ namespace swarm {
     public:
         virtual ~Optimizer() {}
 
-        virtual void optimize(ComputeSystem &cs, std::vector<FloatBuffer*> &parameters, const std::vector<FloatBuffer*> &grads, float reward) = 0;
+        virtual void optimize(
+            ComputeSystem &cs,
+            std::vector<FloatBuffer*> &parameters,
+            const std::vector<FloatBuffer*> &grads,
+            float reward
+        ) = 0;
     };
 }
